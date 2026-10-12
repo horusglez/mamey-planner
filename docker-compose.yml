@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mamey
+      POSTGRES_PASSWORD: mamey
+      POSTGRES_DB: mamey_planner
+    volumes:
+      - mamey_db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mamey"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      PGHOST: db
+      PGPORT: 5432
+      PGUSER: mamey
+      PGPASSWORD: mamey
+      PGDATABASE: mamey_planner
+      JWT_SECRET: dev-secret-change-me
+      AI_KEY_ENCRYPTION_SECRET: dev-only-insecure-secret-change-me
+      PORT: 4000
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:4100:4000"
+    volumes:
+      - ./backend/src:/app/src
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE: http://localhost:4100/api
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:3100:5173"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/index.html:/app/index.html
+
+volumes:
+  mamey_db_data:

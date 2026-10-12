@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 190" preserveAspectRatio="xMidYMax slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd9bd"/>
+      <stop offset="1" stop-color="#fff2e6"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="480" height="190" fill="url(#sky)"/>
+
+  <!-- ground -->
+  <path d="M0,160 Q120,148 240,158 T480,152 V190 H0 Z" fill="#c98f5e" opacity="0.35"/>
+  <path d="M0,152 Q120,140 240,150 T480,144" fill="none" stroke="#6f9b5a" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+
+  <!-- stage 1: seed -->
+  <g transform="translate(40,150)">
+    <ellipse cx="0" cy="4" rx="16" ry="6" fill="#a9754a" opacity="0.3"/>
+    <ellipse cx="0" cy="-2" rx="9" ry="12" fill="#8a5a36"/>
+    <path d="M0,-12 Q4,-20 10,-18" stroke="#6f9b5a" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="12" cy="-19" rx="5" ry="3" fill="#7aa864" transform="rotate(-20 12 -19)"/>
+  </g>
+
+  <!-- stage 2: sprout -->
+  <g transform="translate(150,152)">
+    <path d="M0,0 Q-2,-22 1,-38" stroke="#6f9b5a" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <ellipse cx="-11" cy="-26" rx="10" ry="6" fill="#7aa864" transform="rotate(-25 -11 -26)"/>
+    <ellipse cx="10" cy="-33" rx="10" ry="6" fill="#89b873" transform="rotate(20 10 -33)"/>
+  </g>
+
+  <!-- stage 3: sapling with young fruit -->
+  <g transform="translate(275,150)">
+    <path d="M0,0 Q3,-30 0,-62" stroke="#5f8a4c" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="-16" cy="-38" rx="14" ry="9" fill="#7aa864" transform="rotate(-18 -16 -38)"/>
+    <ellipse cx="15" cy="-46" rx="14" ry="9" fill="#89b873" transform="rotate(16 15 -46)"/>
+    <ellipse cx="-12" cy="-58" rx="12" ry="8" fill="#7aa864" transform="rotate(-10 -12 -58)"/>
+    <ellipse cx="10" cy="-20" rx="7" ry="9" fill="#a3c268"/>
+  </g>
+
+  <!-- stage 4: mature tree, ripe fruit -->
+  <g transform="translate(400,146)">
+    <path d="M0,0 L-2,-40" stroke="#5f8a4c" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <ellipse cx="-4" cy="-62" rx="46" ry="34" fill="#6f9b5a"/>
+    <ellipse cx="-28" cy="-50" rx="24" ry="18" fill="#7aa864"/>
+    <ellipse cx="22" cy="-72" rx="26" ry="20" fill="#89b873"/>
+    <ellipse cx="-22" cy="-56" rx="10" ry="13" fill="#e8622f"/>
+    <ellipse cx="14" cy="-48" rx="10" ry="13" fill="#ff6b4a"/>
+    <ellipse cx="2" cy="-78" rx="10" ry="13" fill="#e8622f"/>
+    <ellipse cx="-22" cy="-56" rx="3.2" ry="4.2" fill="#8a5a36"/>
+    <ellipse cx="14" cy="-48" rx="3.2" ry="4.2" fill="#8a5a36"/>
+    <ellipse cx="2" cy="-78" rx="3.2" ry="4.2" fill="#8a5a36"/>
+  </g>
+</svg>
