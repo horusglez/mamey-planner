@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { api } from '../api/client.js';
+import { MASCOT_LEVELS } from '../lib/mascot.js';
 
 const GOAL_OPTIONS = [
   {
@@ -83,7 +84,8 @@ export default function Onboarding({ onFinish }) {
 
       {step === 0 && (
         <div>
-          <h1>🥭 ¡Bienvenido!</h1>
+          <img src={MASCOT_LEVELS[0].img} alt="Mamey" style={{ width: 120, height: 120, borderRadius: 20, display: 'block', margin: '0 auto 16px' }} />
+          <h1 style={{ justifyContent: 'center' }}>¡Bienvenido!</h1>
           <p>Mamey Planner te ayuda a comer mejor y avanzar hacia tu meta física — bajar grasa, ganar músculo, o ambas.</p>
           <p className="muted">Son solo 3 preguntas rápidas y ya tienes tu plan de calorías y macros listo. Vamos.</p>
           <button onClick={() => setStep(1)}>Empezar →</button>
@@ -159,6 +161,17 @@ export default function Onboarding({ onFinish }) {
           <div className="card"><h3>➕ Registrar</h3><p className="muted">Busca un alimento, pega la URL de una receta, o anota tu comida. Se suma a "Hoy" al momento.</p></div>
           <div className="card"><h3>📏 Medidas</h3><p className="muted">Anota tu peso (y % de grasa o cintura si los mides) cada pocos días pa' ver tu progreso real.</p></div>
           <div className="card"><h3>🎯 Meta</h3><p className="muted">Aquí puedes recalcular o cambiar tu objetivo cuando quieras.</p></div>
+
+          <div className="card">
+            <h3>Tu mascota crece contigo</h3>
+            <p className="muted">Entre más días seguidos registres, más "crece" en el dashboard. Es tu racha, hecha personaje.</p>
+            <div className="row" style={{ marginTop: 10 }}>
+              {MASCOT_LEVELS.map((l) => (
+                <img key={l.level} src={l.img} alt={l.title} style={{ width: '100%', height: 52, objectFit: 'cover', borderRadius: 8 }} />
+              ))}
+            </div>
+          </div>
+
           <button onClick={onFinish}>Entendido, vamos →</button>
         </div>
       )}

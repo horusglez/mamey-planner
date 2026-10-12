@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client.js';
+import { mascotForStreak } from '../lib/mascot.js';
 
 function Bar({ value, target, color }) {
   const pct = target ? Math.min(100, Math.round((value / target) * 100)) : 0;
@@ -66,10 +67,10 @@ export default function Dashboard() {
 
       {isToday && streak && (
         <div className="card streak-card">
-          <div className="streak-flame">{streak.streak > 0 ? '🔥' : '🌱'}</div>
+          <img src={mascotForStreak(streak.streak).img} alt="" className="streak-mascot" />
           <div>
-            <h3>{streak.streak} día{streak.streak === 1 ? '' : 's'} de racha</h3>
-            <p className="muted">{streakMessage(streak.streak, streak.loggedToday)}</p>
+            <h3>{mascotForStreak(streak.streak).title}</h3>
+            <p className="muted">{streak.streak} día{streak.streak === 1 ? '' : 's'} de racha — {streakMessage(streak.streak, streak.loggedToday)}</p>
           </div>
         </div>
       )}
