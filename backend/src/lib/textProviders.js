@@ -11,7 +11,7 @@ async function completeWithAnthropic(apiKey, systemPrompt, messages) {
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5',
+      model: 'claude-haiku-5-5',
       max_tokens: 1500,
       system: systemPrompt,
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
@@ -39,7 +39,7 @@ async function completeWithOpenAI(apiKey, systemPrompt, messages) {
 
 async function completeWithGemini(apiKey, systemPrompt, messages) {
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: { 'content-type': 'application/json' },

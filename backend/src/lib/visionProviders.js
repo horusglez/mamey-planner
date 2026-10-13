@@ -37,7 +37,7 @@ async function analyzeWithAnthropic(apiKey, imageBase64, mimeType) {
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5',
+      model: 'claude-haiku-5-5',
       max_tokens: 1024,
       messages: [
         {
@@ -80,7 +80,7 @@ async function analyzeWithOpenAI(apiKey, imageBase64, mimeType) {
 
 async function analyzeWithGemini(apiKey, imageBase64, mimeType) {
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
