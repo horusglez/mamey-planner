@@ -269,6 +269,10 @@ export const translations = {
 
     // --- Settings ---
     'settings.title': 'Ajustes',
+    'settings.profile.title': 'Tu perfil',
+    'settings.profile.name': 'Nombre',
+    'settings.profile.username': 'Usuario',
+    'settings.profile.memberSince': 'Miembro desde',
     'settings.ai.title': 'IA para fotos de comida',
     'settings.ai.activeProvider': 'Proveedor activo:',
     'settings.ai.disconnect': 'Desconectar / cambiar proveedor',
@@ -646,6 +650,10 @@ export const translations = {
 
     // --- Settings ---
     'settings.title': 'Settings',
+    'settings.profile.title': 'Your profile',
+    'settings.profile.name': 'Name',
+    'settings.profile.username': 'Username',
+    'settings.profile.memberSince': 'Member since',
     'settings.ai.title': 'AI for food photos',
     'settings.ai.activeProvider': 'Active provider:',
     'settings.ai.disconnect': 'Disconnect / change provider',

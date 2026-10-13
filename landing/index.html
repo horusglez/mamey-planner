@@ -175,6 +175,23 @@
   .why li::before { content: ''; position: absolute; left: 0; top: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--leaf); }
   .why strong { color: var(--ink); }
 
+  .getstarted { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+  .gs-card { background: var(--card-bg); border: 1px solid var(--line); border-radius: 14px; padding: 28px; }
+  .gs-card h3 { font-size: 17px; margin-bottom: 10px; }
+  .gs-card p { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+  .gs-card ul { list-style: none; }
+  .gs-card li { font-size: 14px; color: var(--muted); padding-left: 18px; position: relative; margin-bottom: 10px; }
+  .gs-card li::before { content: ''; position: absolute; left: 0; top: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--leaf); }
+  .gs-card li strong { color: var(--ink); }
+  .gs-card .mini-link { display: inline-block; margin-top: 4px; font-size: 13.5px; font-weight: 700; }
+  .code-block {
+    background: #1b1410; color: #f3ece5;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12.5px; line-height: 1.7; padding: 16px 18px; border-radius: 10px;
+    overflow-x: auto; white-space: pre;
+  }
+  .code-block .c-muted { color: #9a8a7c; }
+
   footer { padding: 48px 0; }
   footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
   footer p { color: var(--muted); font-size: 13.5px; }
@@ -182,7 +199,7 @@
   @media (max-width: 760px) {
     .hero .wrap { grid-template-columns: 1fr; }
     h1 { font-size: 32px; }
-    .pillars, .features { grid-template-columns: 1fr; }
+    .pillars, .features, .getstarted { grid-template-columns: 1fr; }
     .flow { flex-direction: column; }
     .flow-line { display: none; }
     .why ul { grid-template-columns: 1fr; }
@@ -204,6 +221,7 @@
       <a href="#mission" data-i18n="nav.mission">Mission</a>
       <a href="#features" data-i18n="nav.features">Features</a>
       <a href="#how-it-works" data-i18n="nav.how">How it works</a>
+      <a href="#get-started" data-i18n="nav.getstarted">Get started</a>
       <a href="#mascot" data-i18n="nav.mascot">Your mascot</a>
       <a href="#philosophy" data-i18n="nav.why-free">Why free</a>
     </nav>
@@ -375,6 +393,36 @@
   </div>
 </section>
 
+<section id="get-started">
+  <div class="wrap">
+    <div class="eyebrow" data-i18n="gs.eyebrow">Get it running</div>
+    <h2 data-i18n="gs.h2">Getting started</h2>
+    <p class="section-lede" data-i18n="gs.lede">Self-hosted software, no sign-up on our servers required. Run your own instance.</p>
+    <div class="getstarted">
+      <div class="gs-card">
+        <h3 data-i18n="gs.deploy-h3">Run your own instance</h3>
+        <p data-i18n="gs.deploy-p">There's no public hosted version — it's 100% self-hosted. With Docker installed:</p>
+        <div class="code-block"><span class="c-muted"># </span>git clone https://github.com/horusglez/mamey-planner.git
+cd mamey-planner
+cp backend/.env.example backend/.env
+docker compose up -d --build</div>
+        <p style="margin-top:14px; margin-bottom:0;" data-i18n="gs.deploy-ports">Web on <code>localhost:3100</code>, API on <code>localhost:4100</code>.</p>
+        <a class="mini-link" href="https://github.com/horusglez/mamey-planner#running-it-locally" target="_blank" rel="noopener" data-i18n="gs.deploy-link">Full setup guide on GitHub →</a>
+      </div>
+      <div class="gs-card">
+        <h3 data-i18n="gs.use-h3">Create your account</h3>
+        <p data-i18n="gs.use-p">No email server, no verification wait. Two ways in:</p>
+        <ul>
+          <li data-i18n="gs.use-li1"><strong>Username and password</strong>, like any app — plus a one-time recovery code, since there's no "forgot password" email.</li>
+          <li data-i18n="gs.use-li2"><strong>Or passkey, no password at all</strong> — create the account and sign in after with Face ID, Touch ID or Windows Hello.</li>
+          <li data-i18n="gs.use-li3">Interface in <strong>Spanish or English</strong>, switchable any time in Settings.</li>
+          <li data-i18n="gs.use-li4">Export all your data whenever you want — nothing locked in.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="mascot">
   <div class="wrap">
     <div class="eyebrow" data-i18n="mascot.eyebrow">Your streak, as a character</div>
@@ -420,6 +468,7 @@
   const translations = {
     es: {
       'nav.name': 'El nombre', 'nav.mission': 'Misión', 'nav.features': 'Funciones', 'nav.how': 'Cómo funciona',
+      'nav.getstarted': 'Empezar',
       'nav.mascot': 'Tu mascota', 'nav.why-free': 'Por qué gratis',
       'badge.opensource': 'Código abierto · MIT',
       'badge.coffee': 'Invítame un café',
@@ -450,6 +499,18 @@
       'how.s2-h3': 'Eliges tu objetivo', 'how.s2-p': 'Bajar grasa, ganar músculo, recomposición o mantener.',
       'how.s3-h3': 'Calculamos tu meta', 'how.s3-p': 'TDEE real y macros sugeridos, listos para usar o ajustar.',
       'how.s4-h3': 'Registras y avanzas', 'how.s4-p': 'El dashboard te muestra qué tan cerca estás, cada día.',
+      'gs.eyebrow': 'Ponla a correr', 'gs.h2': 'Cómo empezar',
+      'gs.lede': 'Software autoalojado, sin crear cuenta en nuestros servidores. Corre tu propia instancia.',
+      'gs.deploy-h3': 'Monta tu propia instancia',
+      'gs.deploy-p': 'No existe una versión pública alojada — es 100% autoalojada. Con Docker instalado:',
+      'gs.deploy-ports': 'Web en <code>localhost:3100</code>, API en <code>localhost:4100</code>.',
+      'gs.deploy-link': 'Guía completa de instalación en GitHub →',
+      'gs.use-h3': 'Crea tu cuenta',
+      'gs.use-p': 'Sin servidor de correo, sin esperar verificación. Dos formas de entrar:',
+      'gs.use-li1': '<strong>Usuario y contraseña</strong>, como cualquier app — más un código de recuperación de un solo uso, ya que no hay correo de "olvidé mi contraseña".',
+      'gs.use-li2': '<strong>O con passkey, sin contraseña</strong> — crea tu cuenta y entra después con Face ID, Touch ID o Windows Hello.',
+      'gs.use-li3': 'Interfaz en <strong>español o inglés</strong>, cambiable cuando quieras en Ajustes.',
+      'gs.use-li4': 'Exporta todos tus datos cuando quieras — nada queda atrapado.',
       'mascot.eyebrow': 'Tu racha, hecha personaje', 'mascot.h2': 'Mientras más consistente eres, más crece',
       'mascot.lede': 'Cada día seguido que registras tu comida, tu mascota avanza de nivel — directo en tu dashboard. Es la misma idea de "hábito visible" que tenemos en toda la app, sin necesidad de forzarte nada.',
       'mascot.l1': 'Nivel 1<br>El Hueso', 'mascot.l2': 'Nivel 2<br>Adaptación', 'mascot.l3': 'Nivel 3<br>Crecimiento',

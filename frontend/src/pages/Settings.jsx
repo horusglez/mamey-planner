@@ -7,6 +7,7 @@ import { useLang } from '../i18n/LangContext.jsx';
 
 export default function Settings({ onLogout }) {
   const { t, lang, setLang } = useLang();
+  const [profile, setProfile] = useState(null);
   const [aiConfig, setAiConfig] = useState(null);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -28,6 +29,7 @@ export default function Settings({ onLogout }) {
   const passkeySupported = isPasskeySupported();
   const pushSupported = isPushSupported();
 
+  useEffect(() => { api('/auth/me').then(setProfile).catch(() => {}); }, []);
   useEffect(() => { api('/settings/ai').then(setAiConfig).catch(() => {}); }, []);
   useEffect(() => { if (pushSupported) api('/push/status').then(setPushStatus).catch(() => {}); }, []);
   useEffect(() => { if (passkeySupported) loadPasskeys(); }, []);
@@ -136,6 +138,15 @@ export default function Settings({ onLogout }) {
   return (
     <div>
       <h1>{t('settings.title')}</h1>
+
+      {profile && (
+        <div className="card">
+          <h3>{t('settings.profile.title')}</h3>
+          <div className="list-item"><span>{t('settings.profile.name')}</span><strong>{profile.name}</strong></div>
+          <div className="list-item"><span>{t('settings.profile.username')}</span><strong>{profile.email}</strong></div>
+          <div className="list-item"><span>{t('settings.profile.memberSince')}</span><strong>{new Date(profile.created_at).toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US')}</strong></div>
+        </div>
+      )}
 
       <div className="card">
         <h3>{t('settings.language')}</h3>
