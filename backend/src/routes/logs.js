@@ -46,6 +46,37 @@ logsRouter.post('/', asyncHandler(async (req, res) => {
   res.status(201).json(result.rows[0]);
 }));
 
+logsRouter.patch('/:id', asyncHandler(async (req, res) => {
+  const { mealType, quantityG } = req.body;
+  if (!mealType || !quantityG) {
+    return res.status(400).json({ error: 'mealType y quantityG requeridos' });
+  }
+  const logResult = await pool.query(
+    `SELECT l.id, f.calories_per_100g, f.protein_g, f.carbs_g, f.fat_g
+     FROM food_logs l JOIN foods f ON f.id = l.food_id
+     WHERE l.id = $1 AND l.user_id = $2`,
+    [req.params.id, req.userId]
+  );
+  const row = logResult.rows[0];
+  if (!row) return res.status(404).json({ error: 'registro no encontrado' });
+
+  const factor = quantityG / 100;
+  const result = await pool.query(
+    `UPDATE food_logs SET meal_type = $1, quantity_g = $2, calories = $3, protein_g = $4, carbs_g = $5, fat_g = $6
+     WHERE id = $7 RETURNING *`,
+    [
+      mealType,
+      quantityG,
+      row.calories_per_100g * factor,
+      row.protein_g * factor,
+      row.carbs_g * factor,
+      row.fat_g * factor,
+      req.params.id,
+    ]
+  );
+  res.json(result.rows[0]);
+}));
+
 logsRouter.delete('/:id', asyncHandler(async (req, res) => {
   await pool.query('DELETE FROM food_logs WHERE id = $1 AND user_id = $2', [req.params.id, req.userId]);
   res.status(204).end();

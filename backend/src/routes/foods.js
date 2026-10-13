@@ -123,3 +123,21 @@ foodsRouter.post('/', asyncHandler(async (req, res) => {
   );
   res.status(201).json(result.rows[0]);
 }));
+
+// Only the food's creator can edit it, and only if it's a custom entry --
+// editing a shared Open Food Facts/recipe-cached row would affect other users.
+foodsRouter.patch('/:id', asyncHandler(async (req, res) => {
+  const { name, brand, caloriesPer100g, proteinG, carbsG, fatG, fiberG, sugarG, sodiumMg } = req.body;
+  if (!name || caloriesPer100g == null) {
+    return res.status(400).json({ error: 'name and caloriesPer100g required' });
+  }
+  const result = await pool.query(
+    `UPDATE foods SET name = $1, brand = $2, calories_per_100g = $3, protein_g = $4, carbs_g = $5,
+       fat_g = $6, fiber_g = $7, sugar_g = $8, sodium_mg = $9
+     WHERE id = $10 AND source = 'custom' AND created_by = $11
+     RETURNING *`,
+    [name, brand || null, caloriesPer100g, proteinG || 0, carbsG || 0, fatG || 0, fiberG || 0, sugarG || 0, sodiumMg || 0, req.params.id, req.userId]
+  );
+  if (result.rows.length === 0) return res.status(404).json({ error: 'alimento no encontrado o no editable' });
+  res.json(result.rows[0]);
+}));

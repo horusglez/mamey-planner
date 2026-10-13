@@ -40,6 +40,7 @@ export default function Dashboard() {
   const [date, setDate] = useState(todayStr());
   const [summary, setSummary] = useState(null);
   const [streak, setStreak] = useState(null);
+  const [minDate, setMinDate] = useState(null); // account creation date -- no dates before this make sense
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     api('/dashboard/streak').then(setStreak).catch(() => {});
+    api('/auth/me').then((u) => setMinDate(u.created_at.slice(0, 10))).catch(() => {});
   }, []);
 
   if (error) return <p className="error">{error}</p>;
@@ -56,13 +58,14 @@ export default function Dashboard() {
 
   const { totals, goal } = summary;
   const isToday = date === todayStr();
+  const isAtMinDate = minDate != null && date <= minDate;
 
   return (
     <div>
-      <div className="row" style={{ alignItems: 'center' }}>
-        <button className="icon-btn" style={{ maxWidth: 44 }} onClick={() => setDate(shiftDate(date, -1))}>←</button>
-        <h1 style={{ flex: 2, justifyContent: 'center', margin: 0 }}>{formatLabel(date)}</h1>
-        <button className="icon-btn" style={{ maxWidth: 44 }} disabled={isToday} onClick={() => setDate(shiftDate(date, 1))}>→</button>
+      <div className="date-nav">
+        <button className="icon-btn" disabled={isAtMinDate} onClick={() => setDate(shiftDate(date, -1))} aria-label="Día anterior">‹</button>
+        <h1>{formatLabel(date)}</h1>
+        <button className="icon-btn" disabled={isToday} onClick={() => setDate(shiftDate(date, 1))} aria-label="Día siguiente">›</button>
       </div>
 
       {isToday && streak && (

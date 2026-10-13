@@ -23,7 +23,12 @@ export default function LogFood() {
   const [aiResults, setAiResults] = useState([]);
   const [showCustom, setShowCustom] = useState(false);
   const [customForm, setCustomForm] = useState({ name: '', brand: '', caloriesPer100g: '', proteinG: '', carbsG: '', fatG: '', fiberG: '', sugarG: '', sodiumMg: '' });
+  const [editingFoodId, setEditingFoodId] = useState(null);
   const [creatingCustom, setCreatingCustom] = useState(false);
+  const [myUserId, setMyUserId] = useState(null);
+  const [editingLogId, setEditingLogId] = useState(null);
+  const [editQuantity, setEditQuantity] = useState(100);
+  const [editMealType, setEditMealType] = useState('breakfast');
   const speechSupported = isSpeechSupported();
 
   const isRecipe = selected?.source === 'recipe';
@@ -35,6 +40,7 @@ export default function LogFood() {
 
   useEffect(loadToday, []);
   useEffect(() => { api('/settings/ai').then(setAiConfig).catch(() => {}); }, []);
+  useEffect(() => { api('/auth/me').then((u) => setMyUserId(u.id)).catch(() => {}); }, []);
 
   useEffect(() => {
     if (query.trim().length < 2) {
@@ -114,29 +120,64 @@ export default function LogFood() {
   async function createCustomFood() {
     setError('');
     setCreatingCustom(true);
+    const body = {
+      name: customForm.name,
+      brand: customForm.brand || null,
+      caloriesPer100g: Number(customForm.caloriesPer100g),
+      proteinG: Number(customForm.proteinG) || 0,
+      carbsG: Number(customForm.carbsG) || 0,
+      fatG: Number(customForm.fatG) || 0,
+      fiberG: Number(customForm.fiberG) || 0,
+      sugarG: Number(customForm.sugarG) || 0,
+      sodiumMg: Number(customForm.sodiumMg) || 0,
+    };
     try {
-      const food = await api('/foods', {
-        method: 'POST',
-        body: {
-          name: customForm.name,
-          brand: customForm.brand || null,
-          caloriesPer100g: Number(customForm.caloriesPer100g),
-          proteinG: Number(customForm.proteinG) || 0,
-          carbsG: Number(customForm.carbsG) || 0,
-          fatG: Number(customForm.fatG) || 0,
-          fiberG: Number(customForm.fiberG) || 0,
-          sugarG: Number(customForm.sugarG) || 0,
-          sodiumMg: Number(customForm.sodiumMg) || 0,
-        },
-      });
+      const food = editingFoodId
+        ? await api(`/foods/${editingFoodId}`, { method: 'PATCH', body })
+        : await api('/foods', { method: 'POST', body });
       setSelected(food);
-      setQuantity(100);
+      setQuantity(editingFoodId ? quantity : 100);
       setShowCustom(false);
+      setEditingFoodId(null);
       setCustomForm({ name: '', brand: '', caloriesPer100g: '', proteinG: '', carbsG: '', fatG: '', fiberG: '', sugarG: '', sodiumMg: '' });
     } catch (err) {
       setError(err.message);
     } finally {
       setCreatingCustom(false);
+    }
+  }
+
+  function startEditFood() {
+    setCustomForm({
+      name: selected.name,
+      brand: selected.brand || '',
+      caloriesPer100g: selected.calories_per_100g,
+      proteinG: selected.protein_g,
+      carbsG: selected.carbs_g,
+      fatG: selected.fat_g,
+      fiberG: selected.fiber_g || '',
+      sugarG: selected.sugar_g || '',
+      sodiumMg: selected.sodium_mg || '',
+    });
+    setEditingFoodId(selected.id);
+    setSelected(null);
+    setShowCustom(true);
+  }
+
+  async function startEditLog(log) {
+    setEditingLogId(log.id);
+    setEditQuantity(log.quantity_g);
+    setEditMealType(log.meal_type);
+  }
+
+  async function saveEditLog(id) {
+    setError('');
+    try {
+      await api(`/logs/${id}`, { method: 'PATCH', body: { quantityG: Number(editQuantity), mealType: editMealType } });
+      setEditingLogId(null);
+      loadToday();
+    } catch (err) {
+      setError(err.message);
     }
   }
 
@@ -292,7 +333,7 @@ export default function LogFood() {
           )}
           {showCustom && (
             <div className="card">
-              <h3>Alimento personalizado</h3>
+              <h3>{editingFoodId ? 'Editar alimento' : 'Alimento personalizado'}</h3>
               <p className="muted">Valores por cada 100 gramos.</p>
               <input placeholder="nombre" value={customForm.name} onChange={(e) => updateCustomForm('name', e.target.value)} />
               <input placeholder="marca (opcional)" value={customForm.brand} onChange={(e) => updateCustomForm('brand', e.target.value)} />
@@ -310,9 +351,9 @@ export default function LogFood() {
               </div>
               <input type="number" placeholder="sodio mg (opcional)" value={customForm.sodiumMg} onChange={(e) => updateCustomForm('sodiumMg', e.target.value)} />
               <button disabled={!customForm.name || !customForm.caloriesPer100g || creatingCustom} onClick={createCustomFood}>
-                {creatingCustom ? 'Creando...' : 'Crear y registrar'}
+                {creatingCustom ? 'Guardando...' : editingFoodId ? 'Guardar cambios' : 'Crear y registrar'}
               </button>
-              <button className="secondary" onClick={() => setShowCustom(false)}>Cancelar</button>
+              <button className="secondary" onClick={() => { setShowCustom(false); setEditingFoodId(null); }}>Cancelar</button>
             </div>
           )}
         </>
@@ -356,6 +397,9 @@ export default function LogFood() {
             </p>
           )}
           <button onClick={addLog}>Agregar</button>
+          {selected.source === 'custom' && selected.created_by === myUserId && (
+            <button className="secondary" onClick={startEditFood}>Editar este alimento</button>
+          )}
           <button className="secondary" onClick={() => setSelected(null)}>Cancelar</button>
         </div>
       )}
@@ -364,13 +408,30 @@ export default function LogFood() {
 
       <h3 style={{ marginTop: 24 }}>Hoy</h3>
       {todayLogs.map((log) => (
-        <div key={log.id} className="list-item">
-          <span>{log.food_name} ({Math.round(log.quantity_g)}g) · {log.meal_type}</span>
-          <span>
-            {Math.round(log.calories)} kcal{' '}
-            <a href="#" onClick={(e) => { e.preventDefault(); removeLog(log.id); }}>✕</a>
-          </span>
-        </div>
+        editingLogId === log.id ? (
+          <div key={log.id} className="card">
+            <h3>{log.food_name}</h3>
+            <div className="row">
+              <input type="number" value={editQuantity} onChange={(e) => setEditQuantity(e.target.value)} />
+              <select value={editMealType} onChange={(e) => setEditMealType(e.target.value)}>
+                <option value="breakfast">Desayuno</option>
+                <option value="lunch">Comida</option>
+                <option value="dinner">Cena</option>
+                <option value="snack">Snack</option>
+              </select>
+            </div>
+            <button onClick={() => saveEditLog(log.id)}>Guardar</button>
+            <button className="secondary" onClick={() => setEditingLogId(null)}>Cancelar</button>
+          </div>
+        ) : (
+          <div key={log.id} className="list-item" style={{ cursor: 'pointer' }} onClick={() => startEditLog(log)}>
+            <span>{log.food_name} ({Math.round(log.quantity_g)}g) · {log.meal_type}</span>
+            <span>
+              {Math.round(log.calories)} kcal{' '}
+              <a href="#" onClick={(e) => { e.stopPropagation(); e.preventDefault(); removeLog(log.id); }}>✕</a>
+            </span>
+          </div>
+        )
       ))}
     </div>
   );

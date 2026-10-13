@@ -39,6 +39,11 @@ authRouter.post('/register', asyncHandler(async (req, res) => {
   res.status(201).json({ token, user, recoveryCode });
 }));
 
+authRouter.get('/me', requireAuth, asyncHandler(async (req, res) => {
+  const result = await pool.query('SELECT id, email, name, created_at FROM users WHERE id = $1', [req.userId]);
+  res.json(result.rows[0]);
+}));
+
 authRouter.post('/login', asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
