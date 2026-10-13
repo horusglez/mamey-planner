@@ -38,6 +38,9 @@ export const translations = {
     'register.activityActive': 'Activo',
     'register.activityVeryActive': 'Muy activo',
     'register.submit': 'Crear cuenta',
+    'register.passkeySubmit': 'Crear cuenta con passkey (sin contraseña)',
+    'register.passkeyBusy': 'Creando cuenta…',
+    'register.error.completeProfile': 'Completa nombre, usuario, fecha de nacimiento y altura antes de usar passkey.',
     'register.haveAccount': 'Ya tengo cuenta',
 
     // --- Forgot password ---
@@ -412,6 +415,9 @@ export const translations = {
     'register.activityActive': 'Active',
     'register.activityVeryActive': 'Very active',
     'register.submit': 'Create account',
+    'register.passkeySubmit': 'Create account with passkey (no password)',
+    'register.passkeyBusy': 'Creating account…',
+    'register.error.completeProfile': 'Fill in name, username, birth date and height before using a passkey.',
     'register.haveAccount': 'I already have an account',
 
     // --- Forgot password ---

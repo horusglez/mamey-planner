@@ -46,3 +46,11 @@ export async function loginWithPasskey(email) {
   const response = await startAuthentication(options);
   return api('/webauthn/login-verify', { method: 'POST', body: { email, response } });
 }
+
+// Creates a brand-new account secured only by a passkey -- no password set.
+export async function registerAccountWithPasskey(profile) {
+  const options = await api('/webauthn/register-new-options', { method: 'POST', body: profile });
+  await waitForDocumentFocus();
+  const response = await startRegistration(options);
+  return api('/webauthn/register-new-verify', { method: 'POST', body: { username: profile.username, response } });
+}

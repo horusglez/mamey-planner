@@ -1,21 +1,11 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
 import { pool } from '../db/pool.js';
 import { signToken, requireAuth } from '../middleware/auth.js';
 import { asyncHandler } from '../lib/asyncHandler.js';
+import { generateRecoveryCode } from '../lib/recoveryCode.js';
 
 export const authRouter = Router();
-
-// No email server configured on this self-hosted app -- a saved-once recovery
-// code stands in for the usual "reset link sent to your email" flow.
-function generateRecoveryCode() {
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  const bytes = crypto.randomBytes(12);
-  let raw = '';
-  for (let i = 0; i < 12; i++) raw += alphabet[bytes[i] % alphabet.length];
-  return `${raw.slice(0, 4)}-${raw.slice(4, 8)}-${raw.slice(8, 12)}`;
-}
 
 authRouter.post('/register', asyncHandler(async (req, res) => {
   const { email, password, name, sex, birthDate, heightCm, activityLevel } = req.body;
@@ -48,7 +38,7 @@ authRouter.post('/login', asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
   const user = result.rows[0];
-  if (!user) return res.status(401).json({ error: 'invalid credentials' });
+  if (!user || !user.password_hash) return res.status(401).json({ error: 'invalid credentials' });
   const ok = await bcrypt.compare(password, user.password_hash);
   if (!ok) return res.status(401).json({ error: 'invalid credentials' });
   const token = signToken(user.id);
@@ -94,6 +84,9 @@ authRouter.post('/change-password', requireAuth, asyncHandler(async (req, res) =
     return res.status(400).json({ error: 'currentPassword y newPassword requeridos' });
   }
   const result = await pool.query('SELECT password_hash FROM users WHERE id = $1', [req.userId]);
+  if (!result.rows[0].password_hash) {
+    return res.status(400).json({ error: 'esta cuenta no tiene contraseña, usa tu passkey para iniciar sesión' });
+  }
   const ok = await bcrypt.compare(currentPassword, result.rows[0].password_hash);
   if (!ok) return res.status(401).json({ error: 'contraseña actual incorrecta' });
 

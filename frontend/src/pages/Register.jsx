@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client.js';
+import { isPasskeySupported, registerAccountWithPasskey } from '../lib/passkey.js';
 import { useLang } from '../i18n/LangContext.jsx';
 
 export default function Register({ onAuth }) {
@@ -9,10 +10,16 @@ export default function Register({ onAuth }) {
   });
   const [error, setError] = useState('');
   const [pending, setPending] = useState(null); // { token, recoveryCode } while showing the one-time code
+  const [passkeyBusy, setPasskeyBusy] = useState(false);
+  const passkeySupported = isPasskeySupported();
   const { t } = useLang();
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }));
+  }
+
+  function profileComplete() {
+    return form.name && form.email && form.birthDate && form.heightCm;
   }
 
   async function handleSubmit(e) {
@@ -26,6 +33,30 @@ export default function Register({ onAuth }) {
       setPending(data);
     } catch (err) {
       setError(err.message);
+    }
+  }
+
+  async function handlePasskeyRegister() {
+    setError('');
+    if (!profileComplete()) {
+      setError(t('register.error.completeProfile'));
+      return;
+    }
+    setPasskeyBusy(true);
+    try {
+      const data = await registerAccountWithPasskey({
+        username: form.email,
+        name: form.name,
+        sex: form.sex,
+        birthDate: form.birthDate,
+        heightCm: Number(form.heightCm) || null,
+        activityLevel: form.activityLevel,
+      });
+      setPending(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setPasskeyBusy(false);
     }
   }
 
@@ -51,7 +82,7 @@ export default function Register({ onAuth }) {
       <form onSubmit={handleSubmit}>
         <input placeholder={t('register.name')} value={form.name} onChange={(e) => update('name', e.target.value)} required />
         <input type="text" placeholder={t('register.username')} value={form.email} onChange={(e) => update('email', e.target.value)} required />
-        <input type="password" placeholder={t('register.password')} value={form.password} onChange={(e) => update('password', e.target.value)} required />
+        <input type="password" placeholder={t('register.password')} value={form.password} onChange={(e) => update('password', e.target.value)} required={!passkeySupported} />
         <div className="row">
           <select value={form.sex} onChange={(e) => update('sex', e.target.value)}>
             <option value="male">{t('register.sexMale')}</option>
@@ -71,6 +102,11 @@ export default function Register({ onAuth }) {
         </div>
         {error && <p className="error">{error}</p>}
         <button type="submit">{t('register.submit')}</button>
+        {passkeySupported && (
+          <button type="button" className="secondary" disabled={passkeyBusy} onClick={handlePasskeyRegister}>
+            {passkeyBusy ? t('register.passkeyBusy') : t('register.passkeySubmit')}
+          </button>
+        )}
       </form>
       <p className="muted"><Link to="/">{t('register.haveAccount')}</Link></p>
     </div>
