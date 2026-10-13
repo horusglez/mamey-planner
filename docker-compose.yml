@@ -28,6 +28,10 @@ services:
       PGDATABASE: mamey_planner
       JWT_SECRET: dev-secret-change-me
       AI_KEY_ENCRYPTION_SECRET: dev-only-insecure-secret-change-me
+      VAPID_PUBLIC_KEY: BLzoJS9Jm5-Zag2CAA-holNtCUd-4lJwXAxxJY5MNDpfNm7ROm1XDI3OHo-O6_s5Vz63zvuwKOAGMwmAdeKNE_8
+      VAPID_PRIVATE_KEY: NqDBYPRFf1Q6OURbM_-d0tZKvSoG7sCpWmKoH7IetK0
+      VAPID_SUBJECT: mailto:admin@mamey-planner.local
+      REMINDER_HOUR: "20"
       PORT: 4000
     depends_on:
       db:

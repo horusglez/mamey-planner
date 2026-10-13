@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api, downloadFile } from '../api/client.js';
 import AiProviderSettings from '../components/AiProviderSettings.jsx';
+import { isPushSupported, enablePush, disablePush } from '../lib/push.js';
 
 export default function Settings({ onLogout }) {
   const [aiConfig, setAiConfig] = useState(null);
@@ -10,8 +11,31 @@ export default function Settings({ onLogout }) {
   const [passwordError, setPasswordError] = useState('');
   const [exportError, setExportError] = useState('');
   const [exporting, setExporting] = useState(false);
+  const [pushStatus, setPushStatus] = useState(null);
+  const [pushError, setPushError] = useState('');
+  const [pushBusy, setPushBusy] = useState(false);
+  const pushSupported = isPushSupported();
 
   useEffect(() => { api('/settings/ai').then(setAiConfig).catch(() => {}); }, []);
+  useEffect(() => { if (pushSupported) api('/push/status').then(setPushStatus).catch(() => {}); }, []);
+
+  async function togglePush() {
+    setPushError('');
+    setPushBusy(true);
+    try {
+      if (pushStatus?.subscribed) {
+        await disablePush();
+        setPushStatus({ subscribed: false });
+      } else {
+        await enablePush();
+        setPushStatus({ subscribed: true });
+      }
+    } catch (err) {
+      setPushError(err.message);
+    } finally {
+      setPushBusy(false);
+    }
+  }
 
   async function disconnectAi() {
     await api('/settings/ai', { method: 'DELETE' });
@@ -71,6 +95,23 @@ export default function Settings({ onLogout }) {
           {passwordMessage && <p className="muted">{passwordMessage}</p>}
           <button type="submit">Actualizar contraseña</button>
         </form>
+      </div>
+
+      <div className="card">
+        <h3>Recordatorios</h3>
+        {pushSupported ? (
+          <>
+            <p className="muted">
+              Si no has registrado nada para las 8pm, te mandamos una notificación pa' que no pierdas tu racha. Funciona aunque la app esté cerrada.
+            </p>
+            {pushError && <p className="error">{pushError}</p>}
+            <button className={pushStatus?.subscribed ? 'danger' : ''} disabled={pushBusy || !pushStatus} onClick={togglePush}>
+              {pushBusy ? 'Procesando...' : pushStatus?.subscribed ? 'Desactivar recordatorios' : 'Activar recordatorios'}
+            </button>
+          </>
+        ) : (
+          <p className="muted">Tu navegador no soporta notificaciones push (común en Safari de iPhone fuera de la app instalada — intenta después de "Agregar a inicio").</p>
+        )}
       </div>
 
       <div className="card">

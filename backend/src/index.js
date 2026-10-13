@@ -10,6 +10,8 @@ import { recipesRouter } from './routes/recipes.js';
 import { settingsRouter } from './routes/settings.js';
 import { photosRouter } from './routes/photos.js';
 import { exportRouter } from './routes/export.js';
+import { pushRouter } from './routes/push.js';
+import { startReminderScheduler } from './lib/reminderScheduler.js';
 
 const app = express();
 app.use(cors());
@@ -26,6 +28,7 @@ app.use('/api/recipes', recipesRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/photos', photosRouter);
 app.use('/api/export', exportRouter);
+app.use('/api/push', pushRouter);
 
 app.use((err, _req, res, _next) => {
   console.error(err);
@@ -34,3 +37,4 @@ app.use((err, _req, res, _next) => {
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`mamey-planner API listening on ${PORT}`));
+startReminderScheduler();
