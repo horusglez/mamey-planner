@@ -14,6 +14,7 @@ export default function Settings({ onLogout }) {
   const [pushStatus, setPushStatus] = useState(null);
   const [pushError, setPushError] = useState('');
   const [pushBusy, setPushBusy] = useState(false);
+  const [testMessage, setTestMessage] = useState('');
   const pushSupported = isPushSupported();
 
   useEffect(() => { api('/settings/ai').then(setAiConfig).catch(() => {}); }, []);
@@ -34,6 +35,17 @@ export default function Settings({ onLogout }) {
       setPushError(err.message);
     } finally {
       setPushBusy(false);
+    }
+  }
+
+  async function sendTestNotification() {
+    setPushError('');
+    setTestMessage('');
+    try {
+      await api('/push/test', { method: 'POST' });
+      setTestMessage('Enviada — debería llegarte en unos segundos.');
+    } catch (err) {
+      setPushError(err.message);
     }
   }
 
@@ -105,9 +117,13 @@ export default function Settings({ onLogout }) {
               Si no has registrado nada, te mandamos una notificación en algún momento del día (como Duolingo — hora random, no siempre la misma) pa' que no pierdas tu racha. Funciona aunque la app esté cerrada.
             </p>
             {pushError && <p className="error">{pushError}</p>}
+            {testMessage && <p className="muted">{testMessage}</p>}
             <button className={pushStatus?.subscribed ? 'danger' : ''} disabled={pushBusy || !pushStatus} onClick={togglePush}>
               {pushBusy ? 'Procesando...' : pushStatus?.subscribed ? 'Desactivar recordatorios' : 'Activar recordatorios'}
             </button>
+            {pushStatus?.subscribed && (
+              <button className="secondary" onClick={sendTestNotification}>Enviar notificación de prueba</button>
+            )}
           </>
         ) : (
           <p className="muted">Tu navegador no soporta notificaciones push (común en Safari de iPhone fuera de la app instalada — intenta después de "Agregar a inicio").</p>

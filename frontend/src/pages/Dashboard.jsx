@@ -227,7 +227,7 @@ export default function Dashboard() {
               Promedio por día registrado: {period.average.calories} kcal · {period.average.protein_g}g prot ·{' '}
               {period.average.carbs_g}g carbs · {period.average.fat_g}g grasa
             </p>
-            <div className="week-bars">
+            <div className={`week-bars ${period.buckets.length > 9 ? 'many' : ''}`}>
               {period.buckets.map((b) => {
                 const maxCal = Math.max(...period.buckets.map((x) => x.avgCalories), goal?.target_calories || 1);
                 const h = maxCal ? Math.max(4, Math.round((b.avgCalories / maxCal) * 60)) : 4;

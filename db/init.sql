@@ -86,3 +86,12 @@ CREATE TABLE push_subscriptions (
   auth TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE TABLE reminder_schedule (
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  date DATE NOT NULL,
+  hour INT NOT NULL,
+  minute INT NOT NULL,
+  sent BOOLEAN NOT NULL DEFAULT false,
+  PRIMARY KEY (user_id, date)
+);
