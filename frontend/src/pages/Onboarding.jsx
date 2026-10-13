@@ -1,33 +1,7 @@
 import { useState } from 'react';
 import { api } from '../api/client.js';
 import { MASCOT_LEVELS } from '../lib/mascot.js';
-
-const GOAL_OPTIONS = [
-  {
-    value: 'cut',
-    emoji: '🔥',
-    title: 'Bajar grasa',
-    desc: 'Comerás un poco menos de lo que quemas al día, pa\' que tu cuerpo use su propia grasa como energía.',
-  },
-  {
-    value: 'bulk',
-    emoji: '💪',
-    title: 'Ganar músculo',
-    desc: 'Comerás un poco más de lo que quemas, con suficiente proteína pa\' que ese extra se use pa\' construir músculo.',
-  },
-  {
-    value: 'recomp',
-    emoji: '⚖️',
-    title: 'Recomposición',
-    desc: 'Comerás casi lo que quemas, pero con proteína alta: bajas grasa y ganas músculo al mismo tiempo, más lento pero sin subir ni bajar mucho de peso.',
-  },
-  {
-    value: 'maintain',
-    emoji: '🌿',
-    title: 'Mantener',
-    desc: 'Comerás justo lo que quemas. Ideal si ya estás en tu punto y solo quieres mantener hábitos consistentes.',
-  },
-];
+import { GOAL_OPTIONS } from '../lib/goalOptions.js';
 
 export default function Onboarding({ onFinish }) {
   const [step, setStep] = useState(0);
@@ -104,6 +78,13 @@ export default function Onboarding({ onFinish }) {
             >
               <h3>{g.emoji} {g.title}</h3>
               <p className="muted">{g.desc}</p>
+              {goalType === g.value && (
+                <div className="goal-detail">
+                  <p><strong>¿Es para ti?</strong> {g.forWho}</p>
+                  <p><strong>Qué esperar:</strong> {g.expect}</p>
+                  <p className="goal-motivation">💬 {g.motivation}</p>
+                </div>
+              )}
             </div>
           ))}
           <button disabled={!goalType} onClick={() => setStep(2)}>Continuar →</button>
@@ -146,6 +127,7 @@ export default function Onboarding({ onFinish }) {
           <p className="muted">
             Proteína alta a propósito: te ayuda a conservar músculo sin importar el objetivo. Podrás ajustar estos números después en la pestaña "Meta".
           </p>
+          <p className="goal-motivation">💬 {GOAL_OPTIONS.find((g) => g.value === goalType)?.motivation}</p>
           {error && <p className="error">{error}</p>}
           <div className="row">
             <button className="secondary" onClick={() => setStep(2)}>← Atrás</button>

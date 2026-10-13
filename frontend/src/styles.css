@@ -176,6 +176,24 @@ nav.tabbar a.active { color: #fff; background: linear-gradient(135deg, var(--lea
 .goal-option:active { transform: scale(0.99); }
 .goal-option.selected { border: 2px solid var(--mamey); box-shadow: 0 4px 14px rgba(255, 107, 74, 0.2); }
 
+.goal-detail {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #f0ddcc;
+}
+.goal-detail p { font-size: 13.5px; color: var(--muted); margin-bottom: 6px; }
+.goal-detail strong { color: var(--ink); }
+
+.goal-motivation {
+  font-size: 13.5px;
+  font-style: italic;
+  color: var(--leaf-dark);
+  background: #eef5ec;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 8px 0;
+}
+
 .streak-card {
   display: flex;
   align-items: center;

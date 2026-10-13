@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
+import { GOAL_OPTIONS } from '../lib/goalOptions.js';
+
+const GOAL_LABELS = Object.fromEntries(GOAL_OPTIONS.map((g) => [g.value, `${g.emoji} ${g.title}`]));
 
 export default function Goals() {
-  const [goalType, setGoalType] = useState('recomp');
+  const [goalType, setGoalType] = useState(null);
   const [suggestion, setSuggestion] = useState(null);
   const [active, setActive] = useState(null);
   const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
 
   function loadActive() {
     api('/goals/active').then(setActive).catch((e) => setError(e.message));
@@ -16,11 +20,14 @@ export default function Goals() {
   async function handleSuggest() {
     setError('');
     setSuggestion(null);
+    setBusy(true);
     try {
       const data = await api('/goals/suggest', { method: 'POST', body: { goalType } });
       setSuggestion(data);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -45,42 +52,64 @@ export default function Goals() {
       });
       setActive(saved);
       setSuggestion(null);
+      setGoalType(null);
     } catch (err) {
       setError(err.message);
     }
   }
+
+  const selectedOption = GOAL_OPTIONS.find((g) => g.value === goalType);
 
   return (
     <div>
       <h1>Meta</h1>
       {active && (
         <div className="card">
-          <h3>Meta activa: {active.goal_type}</h3>
+          <h3>Meta activa: {GOAL_LABELS[active.goal_type] || active.goal_type}</h3>
           <p>{active.target_calories} kcal · {active.target_protein_g}g prot · {active.target_carbs_g}g carbs · {active.target_fat_g}g grasa</p>
           <button className="danger" onClick={handleDelete}>Eliminar meta</button>
         </div>
       )}
 
-      <div className="card">
-        <h3>Calcular nueva meta</h3>
-        <select value={goalType} onChange={(e) => setGoalType(e.target.value)}>
-          <option value="cut">Bajar grasa (cut)</option>
-          <option value="bulk">Ganar músculo (bulk)</option>
-          <option value="recomp">Recomposición</option>
-          <option value="maintain">Mantener</option>
-        </select>
-        <button onClick={handleSuggest}>Calcular sugerencia</button>
-        {error && <p className="error">{error}</p>}
+      <h3>{active ? 'Cambiar de objetivo' : '¿Cuál es tu objetivo?'}</h3>
+      <p className="muted">Elige con cuidado — cada uno implica un ritmo y una estrategia distinta.</p>
+      {GOAL_OPTIONS.map((g) => (
+        <div
+          key={g.value}
+          className={`card goal-option ${goalType === g.value ? 'selected' : ''}`}
+          onClick={() => { setGoalType(g.value); setSuggestion(null); }}
+        >
+          <h3>{g.emoji} {g.title}</h3>
+          <p className="muted">{g.desc}</p>
+          {goalType === g.value && (
+            <div className="goal-detail">
+              <p><strong>¿Es para ti?</strong> {g.forWho}</p>
+              <p><strong>Qué esperar:</strong> {g.expect}</p>
+              <p className="goal-motivation">💬 {g.motivation}</p>
+            </div>
+          )}
+        </div>
+      ))}
 
-        {suggestion && (
-          <div>
-            <p>TDEE estimado: {suggestion.tdee} kcal</p>
-            <p>Meta: {suggestion.calories} kcal · {suggestion.proteinG}g prot · {suggestion.carbsG}g carbs · {suggestion.fatG}g grasa</p>
-            <button onClick={handleSave}>Usar esta meta</button>
-          </div>
-        )}
-      </div>
-      <p className="muted">
+      {goalType && !suggestion && (
+        <button disabled={busy} onClick={handleSuggest}>{busy ? 'Calculando...' : 'Calcular mi meta →'}</button>
+      )}
+      {error && <p className="error">{error}</p>}
+
+      {suggestion && (
+        <div className="card">
+          <h3>Tu meta con {selectedOption?.title.toLowerCase()}</h3>
+          <p className="muted">TDEE estimado: {suggestion.tdee} kcal/día</p>
+          <div className="list-item"><span>Calorías</span><strong>{suggestion.calories} kcal</strong></div>
+          <div className="list-item"><span>Proteína</span><strong>{suggestion.proteinG} g</strong></div>
+          <div className="list-item"><span>Carbohidratos</span><strong>{suggestion.carbsG} g</strong></div>
+          <div className="list-item"><span>Grasa</span><strong>{suggestion.fatG} g</strong></div>
+          <p className="goal-motivation" style={{ marginTop: 10 }}>💬 {selectedOption?.motivation}</p>
+          <button onClick={handleSave}>Usar esta meta</button>
+        </div>
+      )}
+
+      <p className="muted" style={{ marginTop: 16 }}>
         Necesitas sexo, fecha de nacimiento y altura en tu perfil, además de al menos un registro de peso en "Medidas", para calcular la sugerencia.
       </p>
     </div>

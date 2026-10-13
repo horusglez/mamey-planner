@@ -1,0 +1,38 @@
+export const GOAL_OPTIONS = [
+  {
+    value: 'cut',
+    emoji: '🔥',
+    title: 'Bajar grasa',
+    desc: 'Comerás un poco menos de lo que quemas al día, pa\' que tu cuerpo use su propia grasa como energía.',
+    forWho: 'Tienes más grasa corporal de la que te gustaría y tu prioridad ahorita es verte y sentirte más delgado.',
+    expect: 'Pérdida de peso gradual (lo saludable es ~0.5-1% de tu peso por semana). Si baja más rápido, probablemente estés perdiendo músculo también, no solo grasa.',
+    motivation: 'No es una carrera. Un déficit moderado que sí puedes sostener le gana siempre a uno agresivo que abandonas en 2 semanas.',
+  },
+  {
+    value: 'bulk',
+    emoji: '💪',
+    title: 'Ganar músculo',
+    desc: 'Comerás un poco más de lo que quemas, con suficiente proteína pa\' que ese extra se use pa\' construir músculo.',
+    forWho: 'Estás delgado o ya en tu peso ideal y quieres construir masa muscular, aceptando subir algo de peso (incluida algo de grasa) en el camino.',
+    expect: 'Ganancia de peso lenta (~0.25-0.5% semanal). Entrenamiento de fuerza + proteína suficiente son igual de importantes que las calorías extra.',
+    motivation: 'El músculo se construye en semanas, no en días. Sé paciente con la báscula — el espejo y la fuerza que vas levantando mienten menos que el número.',
+  },
+  {
+    value: 'recomp',
+    emoji: '⚖️',
+    title: 'Recomposición',
+    desc: 'Comerás casi lo que quemas, pero con proteína alta: bajas grasa y ganas músculo al mismo tiempo, más lento pero sin subir ni bajar mucho de peso.',
+    forWho: 'Estás cerca de tu peso ideal, o eres nuevo en el entrenamiento de fuerza (ahí es donde más rinde este enfoque).',
+    expect: 'La báscula casi no se mueve — mide con cinta o fotos, no solo peso, porque el cambio real está en la composición, no en el número.',
+    motivation: 'Es el camino más lento de los tres, pero el más elegante: menos grasa y más músculo sin montaña rusa de peso.',
+  },
+  {
+    value: 'maintain',
+    emoji: '🌿',
+    title: 'Mantener',
+    desc: 'Comerás justo lo que quemas. Ideal si ya estás en tu punto y solo quieres mantener hábitos consistentes.',
+    forWho: 'Ya llegaste a donde querías, o por ahora solo buscas construir el hábito de registrar sin cambiar tu físico.',
+    expect: 'Tu peso se mantiene estable. El objetivo aquí no es cambio, es consistencia.',
+    motivation: 'Mantener también es un logro — la mayoría de la gente que baja de peso lo recupera después. Sostenerlo es la victoria real.',
+  },
+];
