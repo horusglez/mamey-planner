@@ -63,7 +63,7 @@ logsRouter.patch('/:id', asyncHandler(async (req, res) => {
   const factor = quantityG / 100;
   const result = await pool.query(
     `UPDATE food_logs SET meal_type = $1, quantity_g = $2, calories = $3, protein_g = $4, carbs_g = $5, fat_g = $6
-     WHERE id = $7 RETURNING *`,
+     WHERE id = $7 AND user_id = $8 RETURNING *`,
     [
       mealType,
       quantityG,
@@ -72,6 +72,7 @@ logsRouter.patch('/:id', asyncHandler(async (req, res) => {
       row.carbs_g * factor,
       row.fat_g * factor,
       req.params.id,
+      req.userId,
     ]
   );
   res.json(result.rows[0]);

@@ -18,8 +18,14 @@ export default function Assistant() {
   const [planError, setPlanError] = useState('');
   const [planMessage, setPlanMessage] = useState('');
 
-  // chat
-  const [chatHistory, setChatHistory] = useState([]);
+  // chat -- persisted so switching tabs or reloading doesn't wipe the conversation
+  const [chatHistory, setChatHistory] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('mamey_ai_chat_history') || '[]');
+    } catch {
+      return [];
+    }
+  });
   const [chatInput, setChatInput] = useState('');
   const [chatBusy, setChatBusy] = useState(false);
   const [chatError, setChatError] = useState('');
@@ -27,6 +33,14 @@ export default function Assistant() {
 
   useEffect(() => { api('/settings/ai').then(setAiConfig).catch(() => {}); }, []);
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatHistory]);
+  useEffect(() => {
+    localStorage.setItem('mamey_ai_chat_history', JSON.stringify(chatHistory));
+  }, [chatHistory]);
+
+  function clearChat() {
+    setChatHistory([]);
+    setChatError('');
+  }
 
   async function generatePlan() {
     setPlanError('');
@@ -154,16 +168,29 @@ export default function Assistant() {
           ))}
 
           {planItems.length > 0 && (
-            <button onClick={addPlanToToday}>Agregar seleccionados a "Hoy"</button>
+            <div className="row">
+              <button onClick={addPlanToToday}>Agregar seleccionados a "Hoy"</button>
+              <button className="secondary" disabled={generating} onClick={generatePlan}>
+                {generating ? 'Generando...' : 'Regenerar'}
+              </button>
+              <button className="secondary" onClick={() => setPlanItems([])}>Descartar</button>
+            </div>
           )}
         </div>
       )}
 
       {tab === 'chat' && (
         <div>
-          <p className="muted" style={{ marginBottom: 10 }}>
-            💬 No reemplaza a un nutriólogo certificado — para temas médicos, consulta a un profesional real.
-          </p>
+          <div className="row" style={{ alignItems: 'center' }}>
+            <p className="muted" style={{ marginBottom: 10, flex: 1 }}>
+              💬 No reemplaza a un nutriólogo certificado — para temas médicos, consulta a un profesional real.
+            </p>
+            {chatHistory.length > 0 && (
+              <button className="secondary" style={{ maxWidth: 110, marginBottom: 10 }} onClick={clearChat}>
+                Limpiar chat
+              </button>
+            )}
+          </div>
           <div className="chat-window">
             {chatHistory.length === 0 && (
               <p className="muted">Pregúntale algo, por ejemplo: "¿qué como si se me antoja algo dulce?" o "dame una receta con pollo y arroz".</p>
