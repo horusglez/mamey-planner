@@ -7,7 +7,7 @@ export function isPasskeySupported() {
 
 export async function registerPasskey(deviceName) {
   const options = await api('/webauthn/register-options');
-  const response = await startRegistration({ optionsJSON: options });
+  const response = await startRegistration(options);
   await api('/webauthn/register-verify', { method: 'POST', body: { response, deviceName } });
 }
 
@@ -16,6 +16,6 @@ export async function loginWithPasskey(email) {
   if (!options.allowCredentials || options.allowCredentials.length === 0) {
     throw new Error('No hay passkeys registrados para ese correo.');
   }
-  const response = await startAuthentication({ optionsJSON: options });
+  const response = await startAuthentication(options);
   return api('/webauthn/login-verify', { method: 'POST', body: { email, response } });
 }
