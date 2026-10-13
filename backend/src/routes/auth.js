@@ -4,10 +4,11 @@ import { pool } from '../db/pool.js';
 import { signToken, requireAuth } from '../middleware/auth.js';
 import { asyncHandler } from '../lib/asyncHandler.js';
 import { generateRecoveryCode } from '../lib/recoveryCode.js';
+import { loginLimiter, signupLimiter } from '../lib/rateLimiters.js';
 
 export const authRouter = Router();
 
-authRouter.post('/register', asyncHandler(async (req, res) => {
+authRouter.post('/register', signupLimiter, asyncHandler(async (req, res) => {
   const { email, password, name, sex, birthDate, heightCm, activityLevel } = req.body;
   if (!email || !password || !name) {
     return res.status(400).json({ error: 'email, password, name required' });
@@ -30,12 +31,30 @@ authRouter.post('/register', asyncHandler(async (req, res) => {
 }));
 
 authRouter.get('/me', requireAuth, asyncHandler(async (req, res) => {
-  const result = await pool.query('SELECT id, email, name, password_hash, created_at FROM users WHERE id = $1', [req.userId]);
+  const result = await pool.query(
+    'SELECT id, email, name, sex, birth_date, height_cm, activity_level, password_hash, created_at FROM users WHERE id = $1',
+    [req.userId]
+  );
   const { password_hash, ...user } = result.rows[0];
   res.json({ ...user, hasPassword: !!password_hash });
 }));
 
-authRouter.post('/login', asyncHandler(async (req, res) => {
+authRouter.patch('/profile', requireAuth, asyncHandler(async (req, res) => {
+  const { name, sex, birthDate, heightCm, activityLevel } = req.body;
+  if (!name || !sex || !birthDate || !heightCm) {
+    return res.status(400).json({ error: 'name, sex, birthDate, heightCm requeridos' });
+  }
+  const result = await pool.query(
+    `UPDATE users SET name = $1, sex = $2, birth_date = $3, height_cm = $4, activity_level = $5
+     WHERE id = $6
+     RETURNING id, email, name, sex, birth_date, height_cm, activity_level, password_hash, created_at`,
+    [name, sex, birthDate, heightCm, activityLevel || 'moderate', req.userId]
+  );
+  const { password_hash, ...user } = result.rows[0];
+  res.json({ ...user, hasPassword: !!password_hash });
+}));
+
+authRouter.post('/login', loginLimiter, asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
   const user = result.rows[0];
@@ -48,7 +67,7 @@ authRouter.post('/login', asyncHandler(async (req, res) => {
 
 // Resets the password using the one-time recovery code shown at registration,
 // and issues a new one since the old one is now spent.
-authRouter.post('/forgot-password', asyncHandler(async (req, res) => {
+authRouter.post('/forgot-password', loginLimiter, asyncHandler(async (req, res) => {
   const { email, recoveryCode, newPassword } = req.body;
   if (!email || !recoveryCode || !newPassword) {
     return res.status(400).json({ error: 'email, recoveryCode y newPassword requeridos' });

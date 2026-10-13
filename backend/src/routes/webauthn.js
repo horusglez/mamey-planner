@@ -12,6 +12,7 @@ import { requireAuth, signToken } from '../middleware/auth.js';
 import { asyncHandler } from '../lib/asyncHandler.js';
 import { RP_ID, RP_NAME, ORIGIN } from '../lib/webauthn.js';
 import { generateRecoveryCode } from '../lib/recoveryCode.js';
+import { loginLimiter, signupLimiter } from '../lib/rateLimiters.js';
 
 export const webauthnRouter = Router();
 
@@ -118,7 +119,7 @@ webauthnRouter.delete('/:id', requireAuth, asyncHandler(async (req, res) => {
 
 // --- Logging in with a passkey (no password) ---------------------------
 
-webauthnRouter.post('/login-options', asyncHandler(async (req, res) => {
+webauthnRouter.post('/login-options', loginLimiter, asyncHandler(async (req, res) => {
   const { email } = req.body;
   const userResult = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
   const user = userResult.rows[0];
@@ -142,7 +143,7 @@ webauthnRouter.post('/login-options', asyncHandler(async (req, res) => {
   res.json(options);
 }));
 
-webauthnRouter.post('/login-verify', asyncHandler(async (req, res) => {
+webauthnRouter.post('/login-verify', loginLimiter, asyncHandler(async (req, res) => {
   const { email, response } = req.body;
   const userResult = await pool.query('SELECT id, name, webauthn_challenge FROM users WHERE email = $1', [email]);
   const user = userResult.rows[0];
@@ -187,7 +188,7 @@ webauthnRouter.post('/login-verify', asyncHandler(async (req, res) => {
 
 // --- Creating a brand-new account with a passkey, no password at all ---
 
-webauthnRouter.post('/register-new-options', asyncHandler(async (req, res) => {
+webauthnRouter.post('/register-new-options', signupLimiter, asyncHandler(async (req, res) => {
   const { username, name, sex, birthDate, heightCm, activityLevel } = req.body;
   if (!username || !name) return res.status(400).json({ error: 'usuario y nombre requeridos' });
 

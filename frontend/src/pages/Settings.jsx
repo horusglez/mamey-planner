@@ -30,6 +30,10 @@ export default function Settings({ onLogout }) {
   const [editingPasskeyId, setEditingPasskeyId] = useState(null);
   const [editPasskeyName, setEditPasskeyName] = useState('');
   const [coffeeDismissed, setCoffeeDismissed] = useState(() => localStorage.getItem('mamey_coffee_dismissed') === 'true');
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState(null);
+  const [profileError, setProfileError] = useState('');
+  const [profileSaving, setProfileSaving] = useState(false);
   const passkeySupported = isPasskeySupported();
   const pushSupported = isPushSupported();
 
@@ -40,6 +44,36 @@ export default function Settings({ onLogout }) {
 
   function loadPasskeys() {
     api('/webauthn/list').then(setPasskeys).catch(() => {});
+  }
+
+  function startEditProfile() {
+    setProfileForm({
+      name: profile.name,
+      sex: profile.sex || 'male',
+      birthDate: profile.birth_date ? profile.birth_date.slice(0, 10) : '',
+      heightCm: profile.height_cm || '',
+      activityLevel: profile.activity_level || 'moderate',
+    });
+    setProfileError('');
+    setEditingProfile(true);
+  }
+
+  async function saveProfile(e) {
+    e.preventDefault();
+    setProfileError('');
+    setProfileSaving(true);
+    try {
+      const updated = await api('/auth/profile', {
+        method: 'PATCH',
+        body: { ...profileForm, heightCm: Number(profileForm.heightCm) },
+      });
+      setProfile(updated);
+      setEditingProfile(false);
+    } catch (err) {
+      setProfileError(err.message);
+    } finally {
+      setProfileSaving(false);
+    }
   }
 
   function dismissCoffee() {
@@ -159,12 +193,44 @@ export default function Settings({ onLogout }) {
     <div>
       <h1>{t('settings.title')}</h1>
 
-      {profile && (
+      {profile && !editingProfile && (
         <div className="card">
           <h3>{t('settings.profile.title')}</h3>
           <div className="list-item"><span>{t('settings.profile.name')}</span><strong>{profile.name}</strong></div>
           <div className="list-item"><span>{t('settings.profile.username')}</span><strong>{profile.email}</strong></div>
           <div className="list-item"><span>{t('settings.profile.memberSince')}</span><strong>{new Date(profile.created_at).toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US')}</strong></div>
+          <button className="secondary" onClick={startEditProfile}>{t('settings.profile.edit')}</button>
+        </div>
+      )}
+
+      {profile && editingProfile && (
+        <div className="card">
+          <h3>{t('settings.profile.editTitle')}</h3>
+          <form onSubmit={saveProfile}>
+            <input placeholder={t('register.name')} value={profileForm.name} onChange={(e) => setProfileForm((f) => ({ ...f, name: e.target.value }))} required />
+            <div className="row">
+              <select value={profileForm.sex} onChange={(e) => setProfileForm((f) => ({ ...f, sex: e.target.value }))}>
+                <option value="male">{t('register.sexMale')}</option>
+                <option value="female">{t('register.sexFemale')}</option>
+              </select>
+              <input type="date" value={profileForm.birthDate} onChange={(e) => setProfileForm((f) => ({ ...f, birthDate: e.target.value }))} required />
+            </div>
+            <div className="row">
+              <input type="number" placeholder={t('register.height')} value={profileForm.heightCm} onChange={(e) => setProfileForm((f) => ({ ...f, heightCm: e.target.value }))} required />
+              <select value={profileForm.activityLevel} onChange={(e) => setProfileForm((f) => ({ ...f, activityLevel: e.target.value }))}>
+                <option value="sedentary">{t('register.activitySedentary')}</option>
+                <option value="light">{t('register.activityLight')}</option>
+                <option value="moderate">{t('register.activityModerate')}</option>
+                <option value="active">{t('register.activityActive')}</option>
+                <option value="very_active">{t('register.activityVeryActive')}</option>
+              </select>
+            </div>
+            {profileError && <p className="error">{profileError}</p>}
+            <div className="row">
+              <button type="submit" disabled={profileSaving}>{profileSaving ? t('settings.profile.saving') : t('settings.profile.save')}</button>
+              <button type="button" className="secondary" disabled={profileSaving} onClick={() => setEditingProfile(false)}>{t('goals.cancel')}</button>
+            </div>
+          </form>
         </div>
       )}
 
