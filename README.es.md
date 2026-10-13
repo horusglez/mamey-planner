@@ -8,6 +8,45 @@ Una app de nutrición y recomposición corporal **gratuita, sin anuncios y sin l
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Invítame%20un%20café-ffdd00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/surohsusej)
 
+## Capturas
+
+<table>
+<tr>
+<td width="33%" valign="top">
+<img src="docs/screenshots/dashboard.png" width="260" alt="Dashboard de hoy, con mascota de racha, progreso de peso y barras de calorías/macros en vivo" /><br>
+<strong>Hoy</strong><br>
+Mascota de racha que crece con tu constancia, estimado de progreso de peso, y barras de calorías/macros en vivo contra tu meta.
+</td>
+<td width="33%" valign="top">
+<img src="docs/screenshots/log-food.png" width="260" alt="Pantalla de registrar alimento, con búsqueda, voz, código de barras y foto con IA, más el registro de hoy" /><br>
+<strong>Registrar alimento</strong><br>
+Búsqueda, voz, código de barras, foto con IA o URL de receta — el que sea más rápido en el momento. El registro de hoy queda justo debajo.
+</td>
+<td width="33%" valign="top">
+<img src="docs/screenshots/metrics.png" width="260" alt="Pantalla de medidas corporales con gráfica de tendencia de peso e historial completo" /><br>
+<strong>Medidas corporales</strong><br>
+Gráfica de tendencia de peso más historial completo, para que el progreso sea algo que realmente puedes ver.
+</td>
+</tr>
+<tr>
+<td width="33%" valign="top">
+<img src="docs/screenshots/goals.png" width="260" alt="Pantalla de meta explicando las matemáticas de TDEE detrás del objetivo de calorías" /><br>
+<strong>Meta, explicada</strong><br>
+No solo un número — las matemáticas reales de TDEE y el %déficit/superávit detrás, más la regla de proteína.
+</td>
+<td width="33%" valign="top">
+<img src="docs/screenshots/register.png" width="260" alt="Pantalla de registro con selector entre contraseña y passkey" /><br>
+<strong>Regístrate a tu manera</strong><br>
+Con contraseña, o sin contraseña del todo — crea tu cuenta directo desde un prompt de Face ID / Touch ID / Windows Hello.
+</td>
+<td width="33%" valign="top">
+<img src="docs/screenshots/passkeys.png" width="260" alt="Pantalla de ajustes mostrando passkeys registrados, cada uno renombrable" /><br>
+<strong>Passkeys</strong><br>
+Registra, renombra y elimina una passkey por dispositivo — ninguna contraseña que se pueda filtrar, nunca.
+</td>
+</tr>
+</table>
+
 ## ¿Por qué "Mamey"?
 
 En México, al mamey (o zapote) le decimos coloquialmente así también a alguien musculoso, fuerte y "todo grandote" — "está bien mamey" es una forma común de describir a alguien mamado. De ahí el nombre: una app que te ayuda a construir ese físico, con una mascota que literalmente "crece" contigo según tu constancia.

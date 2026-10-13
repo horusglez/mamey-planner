@@ -8,6 +8,45 @@ A **free, ad-free, no-artificial-limits** nutrition and body recomposition app �
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-ffdd00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/surohsusej)
 
+## Screenshots
+
+<table>
+<tr>
+<td width="33%" valign="top">
+<img src="docs/screenshots/dashboard.png" width="260" alt="Today dashboard, with streak mascot, weight progress and live calorie/macro bars" /><br>
+<strong>Today</strong><br>
+Streak mascot that grows with your consistency, weight-progress estimate, and live calorie/macro bars against your goal.
+</td>
+<td width="33%" valign="top">
+<img src="docs/screenshots/log-food.png" width="260" alt="Log food screen, with search, voice, barcode and AI photo options, plus today's log" /><br>
+<strong>Log food</strong><br>
+Search, voice, barcode, AI photo or a recipe URL — whichever is fastest in the moment. Today's log sits right below.
+</td>
+<td width="33%" valign="top">
+<img src="docs/screenshots/metrics.png" width="260" alt="Body metrics screen with a weight trend chart and full history" /><br>
+<strong>Body metrics</strong><br>
+Weight trend chart plus full history, so progress is something you can actually see.
+</td>
+</tr>
+<tr>
+<td width="33%" valign="top">
+<img src="docs/screenshots/goals.png" width="260" alt="Goals screen explaining the TDEE math behind the calorie target" /><br>
+<strong>Goals, explained</strong><br>
+Not just a number — the actual TDEE math and %deficit/surplus behind it, plus the protein rule.
+</td>
+<td width="33%" valign="top">
+<img src="docs/screenshots/register.png" width="260" alt="Registration screen with a toggle between password and passkey signup" /><br>
+<strong>Sign up your way</strong><br>
+Password, or no password at all — create the account straight from a Face ID / Touch ID / Windows Hello prompt.
+</td>
+<td width="33%" valign="top">
+<img src="docs/screenshots/passkeys.png" width="260" alt="Settings screen showing registered passkeys, each renameable" /><br>
+<strong>Passkeys</strong><br>
+Register, rename and remove a passkey per device — no password to leak, ever.
+</td>
+</tr>
+</table>
+
 ## Why "Mamey"?
 
 In Mexico, "mamey" (the fruit, also called zapote) is also slang for someone muscular, strong, built — "está bien mamey" is a common, affectionate way to describe someone jacked. Hence the name: an app that helps you build that physique, with a mascot that literally "grows" with you as you stay consistent.

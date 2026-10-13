@@ -175,6 +175,12 @@
   .why li::before { content: ''; position: absolute; left: 0; top: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--leaf); }
   .why strong { color: var(--ink); }
 
+  .shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px 28px; }
+  .shot { text-align: center; }
+  .shot img { width: 100%; height: auto; display: block; border-radius: 14px; border: 1px solid var(--line); box-shadow: 0 16px 34px -16px rgba(0,0,0,0.3); margin-bottom: 14px; }
+  .shot h3 { font-size: 15.5px; margin-bottom: 6px; }
+  .shot p { font-size: 13.5px; color: var(--muted); }
+
   .getstarted { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
   .gs-card { background: var(--card-bg); border: 1px solid var(--line); border-radius: 14px; padding: 28px; }
   .gs-card h3 { font-size: 17px; margin-bottom: 10px; }
@@ -201,7 +207,7 @@
   @media (max-width: 760px) {
     .hero .wrap { grid-template-columns: 1fr; }
     h1 { font-size: 32px; }
-    .pillars, .features, .getstarted { grid-template-columns: 1fr; }
+    .pillars, .features, .getstarted, .shots { grid-template-columns: 1fr; }
     .flow { flex-direction: column; }
     .flow-line { display: none; }
     .why ul { grid-template-columns: 1fr; }
@@ -222,6 +228,7 @@
       <a href="#name" data-i18n="nav.name">The name</a>
       <a href="#mission" data-i18n="nav.mission">Mission</a>
       <a href="#features" data-i18n="nav.features">Features</a>
+      <a href="#screenshots" data-i18n="nav.screenshots">Screenshots</a>
       <a href="#how-it-works" data-i18n="nav.how">How it works</a>
       <a href="#get-started" data-i18n="nav.getstarted">Get started</a>
       <a href="#mascot" data-i18n="nav.mascot">Your mascot</a>
@@ -362,6 +369,46 @@
   </div>
 </section>
 
+<section id="screenshots">
+  <div class="wrap">
+    <div class="eyebrow" data-i18n="shots.eyebrow">See it for real</div>
+    <h2 data-i18n="shots.h2">This is the actual app</h2>
+    <p class="section-lede" data-i18n="shots.lede">No mockups -- every screen below is the real thing, running.</p>
+    <div class="shots">
+      <div class="shot">
+        <img src="assets/screenshots/dashboard.png" alt="Today dashboard, with streak mascot, weight progress and live calorie/macro bars" loading="lazy">
+        <h3 data-i18n="shots.dashboard-h3">Today</h3>
+        <p data-i18n="shots.dashboard-p">Streak mascot that grows with your consistency, plus live calorie/macro bars against your goal.</p>
+      </div>
+      <div class="shot">
+        <img src="assets/screenshots/log-food.png" alt="Log food screen, with search, voice, barcode and AI photo options" loading="lazy">
+        <h3 data-i18n="shots.log-h3">Log food</h3>
+        <p data-i18n="shots.log-p">Search, voice, barcode, AI photo or a recipe URL -- whichever is fastest in the moment.</p>
+      </div>
+      <div class="shot">
+        <img src="assets/screenshots/metrics.png" alt="Body metrics screen with a weight trend chart and full history" loading="lazy">
+        <h3 data-i18n="shots.metrics-h3">Body metrics</h3>
+        <p data-i18n="shots.metrics-p">A weight trend chart plus full history, so progress is something you can actually see.</p>
+      </div>
+      <div class="shot">
+        <img src="assets/screenshots/goals.png" alt="Goals screen explaining the TDEE math behind the calorie target" loading="lazy">
+        <h3 data-i18n="shots.goals-h3">Goals, explained</h3>
+        <p data-i18n="shots.goals-p">Not just a number -- the actual TDEE math and the %deficit/surplus behind it.</p>
+      </div>
+      <div class="shot">
+        <img src="assets/screenshots/register.png" alt="Registration screen with a toggle between password and passkey signup" loading="lazy">
+        <h3 data-i18n="shots.register-h3">Sign up your way</h3>
+        <p data-i18n="shots.register-p">Password, or no password at all -- create the account straight from a Face ID / Touch ID prompt.</p>
+      </div>
+      <div class="shot">
+        <img src="assets/screenshots/passkeys.png" alt="Settings screen showing registered passkeys, each renameable" loading="lazy">
+        <h3 data-i18n="shots.passkeys-h3">Passkeys</h3>
+        <p data-i18n="shots.passkeys-p">Register, rename and remove a passkey per device -- no password to leak, ever.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="how-it-works">
   <div class="wrap">
     <div class="eyebrow" data-i18n="how.eyebrow">The flow</div>
@@ -473,6 +520,7 @@ docker compose up -d --build</div>
     es: {
       'nav.name': 'El nombre', 'nav.mission': 'Misión', 'nav.features': 'Funciones', 'nav.how': 'Cómo funciona',
       'nav.getstarted': 'Empezar',
+      'nav.screenshots': 'Capturas',
       'nav.mascot': 'Tu mascota', 'nav.why-free': 'Por qué gratis',
       'badge.opensource': 'Código abierto · MIT',
       'badge.coffee': 'Invítame un café',
@@ -498,6 +546,20 @@ docker compose up -d --build</div>
       'features.f4-h3': 'Foto con IA (opcional)', 'features.f4-p': 'Identifica los alimentos del plato. Tú eliges el proveedor de IA y traes tu propia clave.',
       'features.f5-h3': 'Plan de comidas y chat con IA', 'features.f5-p': 'Genera un día completo de comidas según tu meta, más un chat de nutrición que conoce tu objetivo.',
       'features.f6-h3': 'Progreso real', 'features.f6-p': 'Peso, % de grasa y cintura en el tiempo, con gráfica de tendencia.',
+      'shots.eyebrow': 'Mírala de verdad', 'shots.h2': 'Esta es la app real',
+      'shots.lede': 'Nada de maquetas -- cada pantalla de abajo es la app real, corriendo.',
+      'shots.dashboard-h3': 'Hoy',
+      'shots.dashboard-p': 'Mascota de racha que crece con tu constancia, más barras de calorías/macros en vivo contra tu meta.',
+      'shots.log-h3': 'Registrar alimento',
+      'shots.log-p': 'Búsqueda, voz, código de barras, foto con IA o URL de receta -- el que sea más rápido en el momento.',
+      'shots.metrics-h3': 'Medidas corporales',
+      'shots.metrics-p': 'Gráfica de tendencia de peso más historial completo, para que el progreso sea algo que de verdad puedas ver.',
+      'shots.goals-h3': 'Meta, explicada',
+      'shots.goals-p': 'No solo un número -- las matemáticas reales de TDEE y el %déficit/superávit detrás.',
+      'shots.register-h3': 'Regístrate a tu manera',
+      'shots.register-p': 'Con contraseña, o sin contraseña del todo -- crea tu cuenta directo desde un prompt de Face ID / Touch ID.',
+      'shots.passkeys-h3': 'Passkeys',
+      'shots.passkeys-p': 'Registra, renombra y elimina una passkey por dispositivo -- ninguna contraseña que se pueda filtrar, nunca.',
       'how.eyebrow': 'El flujo', 'how.h2': 'Cómo funciona', 'how.lede': 'Cuatro pasos, de la cuenta nueva a la meta calculada.',
       'how.s1-h3': 'Creas tu perfil', 'how.s1-p': 'Sexo, edad, altura y nivel de actividad — una sola vez.',
       'how.s2-h3': 'Eliges tu objetivo', 'how.s2-p': 'Bajar grasa, ganar músculo, recomposición o mantener.',
