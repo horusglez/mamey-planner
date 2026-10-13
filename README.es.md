@@ -92,4 +92,8 @@ MIT — ver [LICENSE](LICENSE). Úsala, modifícala, lo que quieras.
 
 ## Apoya el proyecto
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-ffdd00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/surohsusej)
+
 Mamey Planner es gratis y siempre lo será. Si te sirve, puedes [invitarme un café](https://buymeacoffee.com/surohsusej) — totalmente opcional, nunca necesario para ninguna función.
+
+*Mamey Planner is free and always will be. If it's useful to you, you can [buy me a coffee](https://buymeacoffee.com/surohsusej) — completely optional, never required for any feature.*

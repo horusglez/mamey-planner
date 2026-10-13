@@ -61,17 +61,17 @@ webauthnRouter.post('/register-verify', requireAuth, asyncHandler(async (req, re
     return res.status(400).json({ error: 'verificación de passkey fallida' });
   }
 
-  const { credential } = verification.registrationInfo;
+  const { credentialID, credentialPublicKey, counter } = verification.registrationInfo;
   await pool.query(
     `INSERT INTO webauthn_credentials (user_id, credential_id, public_key, counter, device_name, transports)
      VALUES ($1, $2, $3, $4, $5, $6)`,
     [
       req.userId,
-      credential.id,
-      Buffer.from(credential.publicKey).toString('base64'),
-      credential.counter,
+      credentialID,
+      Buffer.from(credentialPublicKey).toString('base64'),
+      counter,
       deviceName || null,
-      (credential.transports || []).join(','),
+      (response.response?.transports || []).join(','),
     ]
   );
   res.status(201).json({ ok: true });
@@ -136,9 +136,9 @@ webauthnRouter.post('/login-verify', asyncHandler(async (req, res) => {
       expectedChallenge: user.webauthn_challenge,
       expectedOrigin: ORIGIN,
       expectedRPID: RP_ID,
-      credential: {
-        id: cred.credential_id,
-        publicKey: new Uint8Array(Buffer.from(cred.public_key, 'base64')),
+      authenticator: {
+        credentialID: cred.credential_id,
+        credentialPublicKey: new Uint8Array(Buffer.from(cred.public_key, 'base64')),
         counter: Number(cred.counter),
         transports: cred.transports ? cred.transports.split(',') : undefined,
       },
