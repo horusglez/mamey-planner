@@ -183,7 +183,7 @@
   .gs-card li { font-size: 14px; color: var(--muted); padding-left: 18px; position: relative; margin-bottom: 10px; }
   .gs-card li::before { content: ''; position: absolute; left: 0; top: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--leaf); }
   .gs-card li strong { color: var(--ink); }
-  .gs-card .mini-link { display: inline-block; margin-top: 4px; font-size: 13.5px; font-weight: 700; }
+  .gs-card .gs-btn { margin-top: 4px; font-size: 13.5px; padding: 10px 18px; }
   .code-block {
     background: #1b1410; color: #f3ece5;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -195,6 +195,8 @@
   footer { padding: 48px 0; }
   footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
   footer p { color: var(--muted); font-size: 13.5px; }
+  .footer-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .footer-btn { font-size: 13px; padding: 8px 16px; }
 
   @media (max-width: 760px) {
     .hero .wrap { grid-template-columns: 1fr; }
@@ -407,7 +409,7 @@ cd mamey-planner
 cp backend/.env.example backend/.env
 docker compose up -d --build</div>
         <p style="margin-top:14px; margin-bottom:0;" data-i18n="gs.deploy-ports">Web on <code>localhost:3100</code>, API on <code>localhost:4100</code>.</p>
-        <a class="mini-link" href="https://github.com/horusglez/mamey-planner#running-it-locally" target="_blank" rel="noopener" data-i18n="gs.deploy-link">Full setup guide on GitHub →</a>
+        <a class="btn btn-secondary gs-btn" href="https://github.com/horusglez/mamey-planner#running-it-locally" target="_blank" rel="noopener" data-i18n="gs.deploy-link">Full setup guide on GitHub →</a>
       </div>
       <div class="gs-card">
         <h3 data-i18n="gs.use-h3">Create your account</h3>
@@ -459,8 +461,10 @@ docker compose up -d --build</div>
 <footer>
   <div class="wrap">
     <p data-i18n="footer.p1">Mamey Planner — independent, open-source project. Source code and issues on GitHub.</p>
-    <p><a href="https://github.com/horusglez/mamey-planner" target="_blank" rel="noopener" data-i18n="footer.repo-link">github.com/horusglez/mamey-planner</a></p>
-    <p><a href="https://buymeacoffee.com/surohsusej" target="_blank" rel="noopener" data-i18n="footer.coffee">☕ Buy me a coffee</a></p>
+    <div class="footer-actions">
+      <a class="btn btn-secondary footer-btn" href="https://github.com/horusglez/mamey-planner" target="_blank" rel="noopener" data-i18n="footer.repo-link">github.com/horusglez/mamey-planner</a>
+      <a class="btn btn-secondary footer-btn" href="https://buymeacoffee.com/surohsusej" target="_blank" rel="noopener" data-i18n="footer.coffee">☕ Buy me a coffee</a>
+    </div>
   </div>
 </footer>
 
