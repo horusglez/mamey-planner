@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Mamey Planner — Nutrición y recomposición corporal, gratis</title>
-<meta name="description" content="App de nutrición y recomposición corporal gratuita, sin anuncios, sin límites artificiales. Código abierto cuando alcance versión estable." />
+<title>Mamey Planner — Free nutrition & body recomposition tracking</title>
+<meta name="description" content="Free nutrition and body recomposition app. No ads, no artificial limits, open source." />
 <style>
   :root {
     --mamey: #ff6b4a;
@@ -32,20 +32,29 @@
     position: sticky; top: 0; background: rgba(255,250,245,0.92); backdrop-filter: blur(6px);
     z-index: 10;
   }
-  header .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; }
-  .wordmark { font-size: 19px; font-weight: 800; letter-spacing: -0.01em; }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 16px; }
+  .wordmark { font-size: 19px; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap; }
   .wordmark span { color: var(--mamey-dark); }
-  nav { display: flex; gap: 28px; font-size: 14px; font-weight: 600; }
-  nav a { text-decoration: none; color: var(--muted); }
+  nav { display: flex; gap: 24px; font-size: 14px; font-weight: 600; }
+  nav a { text-decoration: none; color: var(--muted); white-space: nowrap; }
   nav a:hover { color: var(--ink); }
+  .header-right { display: flex; align-items: center; gap: 10px; }
 
   .status-pill {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 12px; font-weight: 700; letter-spacing: 0.02em;
     color: var(--leaf-dark); background: #eef5ec; border: 1px solid #d7e8d1;
-    padding: 5px 12px; border-radius: 999px;
+    padding: 5px 12px; border-radius: 999px; white-space: nowrap;
   }
-  .status-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--leaf); }
+
+  .lang-toggle {
+    display: flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; font-size: 12px; font-weight: 700;
+  }
+  .lang-toggle button {
+    border: none; background: #fff; color: var(--muted); padding: 6px 11px; cursor: pointer; font-weight: 700; font-size: 12px;
+    font-family: inherit;
+  }
+  .lang-toggle button.active { background: var(--mamey-dark); color: #fff; }
 
   .hero { padding: 86px 0 64px; border-bottom: 1px solid var(--line); }
   .hero .wrap { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; }
@@ -66,6 +75,12 @@
   .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mamey-dark); }
   h2 { font-size: 28px; margin: 10px 0 14px; letter-spacing: -0.01em; }
   section > .wrap > p.section-lede { color: var(--muted); font-size: 16px; max-width: 620px; margin-bottom: 44px; }
+
+  .name-story { display: grid; grid-template-columns: 1.3fr 0.7fr; gap: 48px; align-items: center; }
+  .name-story p { color: var(--muted); font-size: 15.5px; margin-bottom: 14px; }
+  .name-story p strong { color: var(--ink); }
+  .fruit-art { margin: 0 auto; width: 200px; }
+  .fruit-art svg { width: 100%; height: auto; }
 
   .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
   .pillar svg { width: 36px; height: 36px; margin-bottom: 16px; }
@@ -112,6 +127,8 @@
     .why ul { grid-template-columns: 1fr; }
     .mascot-row { flex-wrap: wrap; }
     .mascot-row figure { flex: 1 1 calc(33.333% - 11px); min-width: 90px; }
+    .name-story { grid-template-columns: 1fr; }
+    .fruit-art { width: 140px; order: -1; }
     nav { display: none; }
   }
 </style>
@@ -122,25 +139,35 @@
   <div class="wrap">
     <div class="wordmark">Mamey<span>Planner</span></div>
     <nav>
-      <a href="#mision">Misión</a>
-      <a href="#funciones">Funciones</a>
-      <a href="#como-funciona">Cómo funciona</a>
-      <a href="#mascota">Tu mascota</a>
-      <a href="#filosofia">Por qué gratis</a>
+      <a href="#name" data-i18n="nav.name">The name</a>
+      <a href="#mission" data-i18n="nav.mission">Mission</a>
+      <a href="#features" data-i18n="nav.features">Features</a>
+      <a href="#how-it-works" data-i18n="nav.how">How it works</a>
+      <a href="#mascot" data-i18n="nav.mascot">Your mascot</a>
+      <a href="#philosophy" data-i18n="nav.why-free">Why free</a>
     </nav>
-    <span class="status-pill">En desarrollo activo</span>
+    <div class="header-right">
+      <div class="lang-toggle">
+        <button id="lang-en" onclick="setLang('en')">EN</button>
+        <button id="lang-es" onclick="setLang('es')">ES</button>
+      </div>
+      <a href="https://github.com/horusglez/mamey-planner" target="_blank" rel="noopener" class="status-pill" style="text-decoration:none;">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" style="margin-right:2px;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span data-i18n="badge.opensource">Open source · MIT</span>
+      </a>
+    </div>
   </div>
 </header>
 
 <section class="hero">
   <div class="wrap">
     <div>
-      <div class="eyebrow">Nutrición · Recomposición corporal</div>
-      <h1>Mejores hábitos alimenticios, sin pagar por ellos.</h1>
-      <p class="lede">Registra lo que comes por búsqueda, voz, código de barras o foto. Mamey Planner calcula tu meta de calorías y macros según tu objetivo, y te ayuda a sostener el hábito — gratis, sin anuncios, sin límites artificiales.</p>
+      <div class="eyebrow" data-i18n="hero.eyebrow">Nutrition · Body recomposition</div>
+      <h1 data-i18n="hero.h1">Better eating habits, without paying for them.</h1>
+      <p class="lede" data-i18n="hero.lede">Log what you eat by search, voice, barcode or photo. Mamey Planner calculates your calorie and macro target based on your goal, and helps you stick with it — free, no ads, no artificial limits.</p>
       <div class="hero-ctas">
-        <a class="btn btn-primary" href="#como-funciona">Ver cómo funciona</a>
-        <a class="btn btn-secondary" href="#funciones">Explorar funciones</a>
+        <a class="btn btn-primary" href="#how-it-works" data-i18n="hero.cta-primary">See how it works</a>
+        <a class="btn btn-secondary" href="#features" data-i18n="hero.cta-secondary">Explore features</a>
       </div>
     </div>
     <figure class="hero-art">
@@ -166,132 +193,154 @@
   </div>
 </section>
 
-<section id="mision">
+<section id="name">
+  <div class="wrap name-story">
+    <div>
+      <div class="eyebrow" data-i18n="name.eyebrow">Where the name comes from</div>
+      <h2 data-i18n="name.h2">Why "Mamey"?</h2>
+      <p data-i18n="name.p1">The mamey — also called zapote (<em>Pouteria sapota</em>) — is a tropical fruit native to Mesoamerica: rough brown skin, a dense, generous salmon-orange flesh, with a flavor somewhere between sweet potato, honey and almond. It's been grown and eaten in Mexico since long before the Spanish arrived.</p>
+      <p data-i18n="name.p2">In colloquial Mexican Spanish, "mamey" is also slang for someone muscular, strong, built — a physique that's as generous as the fruit's own flesh. <strong data-i18n="name.quote">"Está bien mamey ese cuate"</strong> is a common, affectionate way of saying someone's jacked.</p>
+      <p data-i18n="name.p3">That's where the app's name comes from: a character that literally starts as a pit and, with consistency, becomes mamey. That's why the mascot grows with you — it's not just a cute metaphor, it's the actual joke behind the name.</p>
+    </div>
+    <figure class="fruit-art">
+      <svg viewBox="0 0 220 220" fill="none">
+        <ellipse cx="110" cy="112" rx="88" ry="92" fill="#8a5a36"/>
+        <ellipse cx="110" cy="112" rx="88" ry="92" fill="none" stroke="#6b4226" stroke-width="2" stroke-dasharray="1 7" stroke-linecap="round"/>
+        <ellipse cx="110" cy="114" rx="66" ry="70" fill="#e8622f"/>
+        <ellipse cx="110" cy="114" rx="66" ry="70" fill="none" stroke="#c94f22" stroke-width="1.5" opacity="0.4"/>
+        <ellipse cx="110" cy="116" rx="24" ry="34" fill="#8a5a36"/>
+        <ellipse cx="101" cy="104" rx="7" ry="10" fill="#fff" opacity="0.18"/>
+      </svg>
+    </figure>
+  </div>
+</section>
+
+<section id="mission">
   <div class="wrap">
-    <div class="eyebrow">Por qué existe</div>
-    <h2>Misión, visión y objetivo</h2>
-    <p class="section-lede">Las apps de nutrición más conocidas cobran por desbloquear lo básico. Mamey Planner nace para cambiar eso.</p>
+    <div class="eyebrow" data-i18n="mission.eyebrow">Why it exists</div>
+    <h2 data-i18n="mission.h2">Mission, vision and objective</h2>
+    <p class="section-lede" data-i18n="mission.lede">The best-known nutrition apps charge to unlock the basics. Mamey Planner exists to change that.</p>
     <div class="pillars">
       <div class="pillar">
         <svg viewBox="0 0 24 24" fill="none" stroke="#2f7d44" stroke-width="1.8"><path d="M12 21s-7-4.6-9.5-9C.5 8 2 4 6 4c2.2 0 3.6 1.2 4.5 2.4C11.4 5.2 12.8 4 15 4c4 0 5.5 4 3.5 8-2.5 4.4-6.5 9-6.5 9z"/></svg>
-        <h3>Misión</h3>
-        <p>Ayudar a las personas a construir mejores hábitos alimenticios y alcanzar su recomposición corporal, sin que el costo, la complejidad o la publicidad se interpongan.</p>
+        <h3 data-i18n="mission.m-h3">Mission</h3>
+        <p data-i18n="mission.m-p">Help people build better eating habits and reach their body recomposition goals, without cost, complexity or advertising getting in the way.</p>
       </div>
       <div class="pillar">
         <svg viewBox="0 0 24 24" fill="none" stroke="#2f7d44" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/></svg>
-        <h3>Visión</h3>
-        <p>Ser la alternativa gratuita y de código abierto más completa frente a las apps comerciales de nutrición, disponible para cualquier dispositivo.</p>
+        <h3 data-i18n="mission.v-h3">Vision</h3>
+        <p data-i18n="mission.v-p">Be the most complete free, open-source alternative to commercial nutrition apps, available on any device.</p>
       </div>
       <div class="pillar">
         <svg viewBox="0 0 24 24" fill="none" stroke="#2f7d44" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.8" fill="#2f7d44"/></svg>
-        <h3>Objetivo</h3>
-        <p>Primero una v1 estable como app web. Después, código abierto para quien quiera usarla o mejorarla. Más adelante, apps nativas con integración a tu salud.</p>
+        <h3 data-i18n="mission.o-h3">Objective</h3>
+        <p data-i18n="mission.o-p">A stable v1 as a web app first. Already open source for anyone to use or improve. Native apps with health integration, next.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section id="funciones">
+<section id="features">
   <div class="wrap">
-    <div class="eyebrow">Qué hace</div>
-    <h2>Registrar lo que comes, de la forma que te acomode</h2>
-    <p class="section-lede">Cuatro formas de registrar, cero fricción innecesaria.</p>
+    <div class="eyebrow" data-i18n="features.eyebrow">What it does</div>
+    <h2 data-i18n="features.h2">Log what you eat, however suits you</h2>
+    <p class="section-lede" data-i18n="features.lede">Five ways to log, zero unnecessary friction.</p>
     <div class="features">
       <div class="feature">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-5-5"/></svg>
-        <h3>Búsqueda + base abierta</h3>
-        <p>Base de datos verificada de Open Food Facts, no crowdsourced sin control.</p>
+        <h3 data-i18n="features.f1-h3">Search + open database</h3>
+        <p data-i18n="features.f1-p">Verified Open Food Facts database, not uncontrolled crowdsourcing.</p>
       </div>
       <div class="feature">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v4M9 22h6"/></svg>
-        <h3>Registro por voz</h3>
-        <p>Dices lo que comiste y se separa cantidad y alimento automáticamente.</p>
+        <h3 data-i18n="features.f2-h3">Voice logging</h3>
+        <p data-i18n="features.f2-p">Say what you ate and the amount and food get parsed automatically.</p>
       </div>
       <div class="feature">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 6v12M11 6v12M15 6v12M17.5 6v12" stroke-width="1.2"/></svg>
-        <h3>Código de barras</h3>
-        <p>Apunta la cámara al producto, se identifica al instante.</p>
+        <h3 data-i18n="features.f3-h3">Barcode scan</h3>
+        <p data-i18n="features.f3-p">Point your camera at the product, identified instantly.</p>
       </div>
       <div class="feature">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8a2 2 0 012-2h2l1.5-2h5L16 6h2a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V8z"/><circle cx="12" cy="13" r="3.4"/></svg>
-        <h3>Foto con IA (opcional)</h3>
-        <p>Identifica los alimentos del plato. Tú eliges el proveedor de IA y traes tu propia clave.</p>
+        <h3 data-i18n="features.f4-h3">AI photo logging (optional)</h3>
+        <p data-i18n="features.f4-p">Identifies the food on your plate. You choose the AI provider and bring your own key.</p>
+      </div>
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3v4M15 3v4M4 8h16M6 21h12a2 2 0 002-2V8H4v11a2 2 0 002 2z"/><path d="M8 13l2.5 2.5L16 10"/></svg>
+        <h3 data-i18n="features.f5-h3">AI meal plans & chat</h3>
+        <p data-i18n="features.f5-p">Generates a full day's meals matching your target macros, plus a nutrition chat that knows your goal.</p>
       </div>
       <div class="feature">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4v16h16M8 15l3-4 3 3 4-6"/></svg>
-        <h3>Progreso real</h3>
-        <p>Peso, % de grasa y cintura en el tiempo, con gráfica de tendencia.</p>
-      </div>
-      <div class="feature">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2c0 4-5 5-5 10a5 5 0 0010 0c0-2-1-3-1-5-1 2-2 2-2 1 0-2 1-3-2-6z"/></svg>
-        <h3>Rachas de hábito</h3>
-        <p>Refuerzo visible de la constancia, día tras día.</p>
+        <h3 data-i18n="features.f6-h3">Real progress</h3>
+        <p data-i18n="features.f6-p">Weight, body fat % and waist over time, with a trend chart.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section id="como-funciona">
+<section id="how-it-works">
   <div class="wrap">
-    <div class="eyebrow">El flujo</div>
-    <h2>Cómo funciona</h2>
-    <p class="section-lede">Cuatro pasos, de la cuenta nueva a la meta calculada.</p>
+    <div class="eyebrow" data-i18n="how.eyebrow">The flow</div>
+    <h2 data-i18n="how.h2">How it works</h2>
+    <p class="section-lede" data-i18n="how.lede">Four steps, from a new account to a calculated target.</p>
     <div class="flow">
       <div class="flow-step">
         <div class="flow-line"></div>
         <div class="num">1</div>
-        <h3>Creas tu perfil</h3>
-        <p>Sexo, edad, altura y nivel de actividad — una sola vez.</p>
+        <h3 data-i18n="how.s1-h3">Build your profile</h3>
+        <p data-i18n="how.s1-p">Sex, age, height and activity level — just once.</p>
       </div>
       <div class="flow-step">
         <div class="flow-line"></div>
         <div class="num">2</div>
-        <h3>Eliges tu objetivo</h3>
-        <p>Bajar grasa, ganar músculo, recomposición o mantener.</p>
+        <h3 data-i18n="how.s2-h3">Pick your goal</h3>
+        <p data-i18n="how.s2-p">Cut, bulk, recomposition, or maintain.</p>
       </div>
       <div class="flow-step">
         <div class="flow-line"></div>
         <div class="num">3</div>
-        <h3>Calculamos tu meta</h3>
-        <p>TDEE real y macros sugeridos, listos para usar o ajustar.</p>
+        <h3 data-i18n="how.s3-h3">We calculate your target</h3>
+        <p data-i18n="how.s3-p">Real TDEE and suggested macros, ready to use or adjust.</p>
       </div>
       <div class="flow-step">
         <div class="num">4</div>
-        <h3>Registras y avanzas</h3>
-        <p>El dashboard te muestra qué tan cerca estás, cada día.</p>
+        <h3 data-i18n="how.s4-h3">Log and progress</h3>
+        <p data-i18n="how.s4-p">The dashboard shows how close you are, every day.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section id="mascota">
+<section id="mascot">
   <div class="wrap">
-    <div class="eyebrow">Tu racha, hecha personaje</div>
-    <h2>Mientras más consistente eres, más crece</h2>
-    <p class="section-lede">Cada día seguido que registras tu comida, tu mascota avanza de nivel — directo en tu dashboard. Es la misma idea de "hábito visible" que tenemos en toda la app, sin necesidad de forzarte nada.</p>
+    <div class="eyebrow" data-i18n="mascot.eyebrow">Your streak, as a character</div>
+    <h2 data-i18n="mascot.h2">The more consistent you are, the more it grows</h2>
+    <p class="section-lede" data-i18n="mascot.lede">Every consecutive day you log your food, your mascot levels up — right there on your dashboard. Same "visible habit" idea we use across the whole app, no pressure required.</p>
     <div class="mascot-row">
-      <figure><img src="assets/level-1.jpg" alt="Nivel 1 — El Hueso" loading="lazy"><figcaption>Nivel 1<br>El Hueso</figcaption></figure>
-      <figure><img src="assets/level-2.jpg" alt="Nivel 2 — Adaptación" loading="lazy"><figcaption>Nivel 2<br>Adaptación</figcaption></figure>
-      <figure><img src="assets/level-3.jpg" alt="Nivel 3 — En Crecimiento" loading="lazy"><figcaption>Nivel 3<br>Crecimiento</figcaption></figure>
-      <figure><img src="assets/level-4.jpg" alt="Nivel 4 — Consolidación" loading="lazy"><figcaption>Nivel 4<br>Consolidación</figcaption></figure>
-      <figure><img src="assets/level-5.jpg" alt="Nivel 5 — Mamey Maduro" loading="lazy"><figcaption>Nivel 5<br>Mamey Maduro</figcaption></figure>
+      <figure><img src="assets/level-1.jpg" alt="Level 1 — The Pit" loading="lazy"><figcaption data-i18n="mascot.l1">Level 1<br>The Pit</figcaption></figure>
+      <figure><img src="assets/level-2.jpg" alt="Level 2 — Adapting" loading="lazy"><figcaption data-i18n="mascot.l2">Level 2<br>Adapting</figcaption></figure>
+      <figure><img src="assets/level-3.jpg" alt="Level 3 — Growing" loading="lazy"><figcaption data-i18n="mascot.l3">Level 3<br>Growing</figcaption></figure>
+      <figure><img src="assets/level-4.jpg" alt="Level 4 — Consolidating" loading="lazy"><figcaption data-i18n="mascot.l4">Level 4<br>Consolidating</figcaption></figure>
+      <figure><img src="assets/level-5.jpg" alt="Level 5 — Mature Mamey" loading="lazy"><figcaption data-i18n="mascot.l5">Level 5<br>Mature Mamey</figcaption></figure>
     </div>
   </div>
 </section>
 
-<section id="filosofia">
+<section id="philosophy">
   <div class="wrap">
-    <div class="eyebrow">Nuestros principios</div>
-    <h2>Por qué es gratis</h2>
-    <p class="section-lede">No es una versión de prueba. Es la app completa.</p>
+    <div class="eyebrow" data-i18n="philosophy.eyebrow">Our principles</div>
+    <h2 data-i18n="philosophy.h2">Why it's free</h2>
+    <p class="section-lede" data-i18n="philosophy.lede">Not a trial version. The complete app.</p>
     <div class="why">
       <ul>
-        <li><strong>Gratis es gratis.</strong> Sin escaneos limitados ni funciones escondidas detrás de un muro de pago.</li>
-        <li><strong>Sin anuncios.</strong> En ningún nivel, nunca.</li>
-        <li><strong>Datos abiertos.</strong> Base nutricional verificada, no crowdsourced sin control de calidad.</li>
-        <li><strong>Privacidad primero.</strong> Si usas IA para fotos, usas tu propia clave — tus datos no pasan por un proveedor que no elegiste.</li>
-        <li><strong>Código abierto (pronto).</strong> Se libera en cuanto la v1 sea estable, para que cualquiera la use o mejore.</li>
-        <li><strong>Para cualquier dispositivo.</strong> Web ahora, apps nativas después — sin dejar a nadie fuera.</li>
+        <li data-i18n="philosophy.li1"><strong>Free means free.</strong> No limited scans, no features locked behind a paywall.</li>
+        <li data-i18n="philosophy.li2"><strong>No ads.</strong> At any tier, ever.</li>
+        <li data-i18n="philosophy.li3"><strong>Open data.</strong> Verified nutrition database, not uncontrolled crowdsourcing.</li>
+        <li data-i18n="philosophy.li4"><strong>Privacy first.</strong> If you use AI for photos, you bring your own key — your data never passes through a provider you didn't choose.</li>
+        <li data-i18n="philosophy.li5"><strong>Open source.</strong> MIT licensed, on GitHub, for anyone to use or improve.</li>
+        <li data-i18n="philosophy.li6"><strong>Any device.</strong> Web now, native apps later — nobody left out.</li>
       </ul>
     </div>
   </div>
@@ -299,10 +348,87 @@
 
 <footer>
   <div class="wrap">
-    <p>Mamey Planner — proyecto independiente en desarrollo. Aún no es público ni de código abierto.</p>
-    <p>Licencia por definir, al momento de la liberación.</p>
+    <p data-i18n="footer.p1">Mamey Planner — independent, open-source project. Source code and issues on GitHub.</p>
+    <p><a href="https://github.com/horusglez/mamey-planner" target="_blank" rel="noopener" data-i18n="footer.repo-link">github.com/horusglez/mamey-planner</a></p>
   </div>
 </footer>
+
+<script>
+  const translations = {
+    es: {
+      'nav.name': 'El nombre', 'nav.mission': 'Misión', 'nav.features': 'Funciones', 'nav.how': 'Cómo funciona',
+      'nav.mascot': 'Tu mascota', 'nav.why-free': 'Por qué gratis',
+      'badge.opensource': 'Código abierto · MIT',
+      'hero.eyebrow': 'Nutrición · Recomposición corporal',
+      'hero.h1': 'Mejores hábitos alimenticios, sin pagar por ellos.',
+      'hero.lede': 'Registra lo que comes por búsqueda, voz, código de barras o foto. Mamey Planner calcula tu meta de calorías y macros según tu objetivo, y te ayuda a sostener el hábito — gratis, sin anuncios, sin límites artificiales.',
+      'hero.cta-primary': 'Ver cómo funciona', 'hero.cta-secondary': 'Explorar funciones',
+      'name.eyebrow': 'El origen del nombre', 'name.h2': '¿Por qué "Mamey"?',
+      'name.p1': 'El mamey —también llamado zapote (<em>Pouteria sapota</em>)— es una fruta tropical originaria de Mesoamérica, de cáscara rugosa café y una pulpa anaranjada-salmón densa y generosa, con un sabor que recuerda al camote dulce, la miel y la almendra. Se cultiva y se come en México desde mucho antes de la llegada de los españoles.',
+      'name.p2': 'En el español coloquial mexicano, "mamey" también se usa para describir a alguien musculoso, fuerte, con un físico que se nota — igual de generoso que la pulpa de la fruta. <strong>"Está bien mamey ese cuate"</strong> es una forma común y cariñosa de decir que alguien está mamado.',
+      'name.quote': '"Está bien mamey ese cuate"',
+      'name.p3': 'De ahí el nombre de la app: un personaje que literalmente empieza como hueso y, con constancia, se pone mamey. Por eso la mascota crece contigo — no es solo una metáfora bonita, es el chiste del nombre.',
+      'mission.eyebrow': 'Por qué existe', 'mission.h2': 'Misión, visión y objetivo',
+      'mission.lede': 'Las apps de nutrición más conocidas cobran por desbloquear lo básico. Mamey Planner nace para cambiar eso.',
+      'mission.m-h3': 'Misión', 'mission.m-p': 'Ayudar a las personas a construir mejores hábitos alimenticios y alcanzar su recomposición corporal, sin que el costo, la complejidad o la publicidad se interpongan.',
+      'mission.v-h3': 'Visión', 'mission.v-p': 'Ser la alternativa gratuita y de código abierto más completa frente a las apps comerciales de nutrición, disponible para cualquier dispositivo.',
+      'mission.o-h3': 'Objetivo', 'mission.o-p': 'Primero una v1 estable como app web. Ya es código abierto para quien quiera usarla o mejorarla. Más adelante, apps nativas con integración a tu salud.',
+      'features.eyebrow': 'Qué hace', 'features.h2': 'Registrar lo que comes, de la forma que te acomode',
+      'features.lede': 'Cinco formas de registrar, cero fricción innecesaria.',
+      'features.f1-h3': 'Búsqueda + base abierta', 'features.f1-p': 'Base de datos verificada de Open Food Facts, no crowdsourced sin control.',
+      'features.f2-h3': 'Registro por voz', 'features.f2-p': 'Dices lo que comiste y se separa cantidad y alimento automáticamente.',
+      'features.f3-h3': 'Código de barras', 'features.f3-p': 'Apunta la cámara al producto, se identifica al instante.',
+      'features.f4-h3': 'Foto con IA (opcional)', 'features.f4-p': 'Identifica los alimentos del plato. Tú eliges el proveedor de IA y traes tu propia clave.',
+      'features.f5-h3': 'Plan de comidas y chat con IA', 'features.f5-p': 'Genera un día completo de comidas según tu meta, más un chat de nutrición que conoce tu objetivo.',
+      'features.f6-h3': 'Progreso real', 'features.f6-p': 'Peso, % de grasa y cintura en el tiempo, con gráfica de tendencia.',
+      'how.eyebrow': 'El flujo', 'how.h2': 'Cómo funciona', 'how.lede': 'Cuatro pasos, de la cuenta nueva a la meta calculada.',
+      'how.s1-h3': 'Creas tu perfil', 'how.s1-p': 'Sexo, edad, altura y nivel de actividad — una sola vez.',
+      'how.s2-h3': 'Eliges tu objetivo', 'how.s2-p': 'Bajar grasa, ganar músculo, recomposición o mantener.',
+      'how.s3-h3': 'Calculamos tu meta', 'how.s3-p': 'TDEE real y macros sugeridos, listos para usar o ajustar.',
+      'how.s4-h3': 'Registras y avanzas', 'how.s4-p': 'El dashboard te muestra qué tan cerca estás, cada día.',
+      'mascot.eyebrow': 'Tu racha, hecha personaje', 'mascot.h2': 'Mientras más consistente eres, más crece',
+      'mascot.lede': 'Cada día seguido que registras tu comida, tu mascota avanza de nivel — directo en tu dashboard. Es la misma idea de "hábito visible" que tenemos en toda la app, sin necesidad de forzarte nada.',
+      'mascot.l1': 'Nivel 1<br>El Hueso', 'mascot.l2': 'Nivel 2<br>Adaptación', 'mascot.l3': 'Nivel 3<br>Crecimiento',
+      'mascot.l4': 'Nivel 4<br>Consolidación', 'mascot.l5': 'Nivel 5<br>Mamey Maduro',
+      'philosophy.eyebrow': 'Nuestros principios', 'philosophy.h2': 'Por qué es gratis', 'philosophy.lede': 'No es una versión de prueba. Es la app completa.',
+      'philosophy.li1': '<strong>Gratis es gratis.</strong> Sin escaneos limitados ni funciones escondidas detrás de un muro de pago.',
+      'philosophy.li2': '<strong>Sin anuncios.</strong> En ningún nivel, nunca.',
+      'philosophy.li3': '<strong>Datos abiertos.</strong> Base nutricional verificada, no crowdsourced sin control de calidad.',
+      'philosophy.li4': '<strong>Privacidad primero.</strong> Si usas IA para fotos, usas tu propia clave — tus datos no pasan por un proveedor que no elegiste.',
+      'philosophy.li5': '<strong>Código abierto.</strong> Licencia MIT, en GitHub, para que cualquiera la use o mejore.',
+      'philosophy.li6': '<strong>Para cualquier dispositivo.</strong> Web ahora, apps nativas después — sin dejar a nadie fuera.',
+      'footer.p1': 'Mamey Planner — proyecto independiente de código abierto. Código fuente e issues en GitHub.',
+      'footer.repo-link': 'github.com/horusglez/mamey-planner',
+    },
+  };
+
+  function applyLang(lang) {
+    document.documentElement.lang = lang;
+    document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+    document.getElementById('lang-es').classList.toggle('active', lang === 'es');
+    if (lang === 'en') return; // English text is already the hardcoded default in the HTML
+    const dict = translations[lang];
+    if (!dict) return;
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.getAttribute('data-i18n');
+      if (dict[key] != null) el.innerHTML = dict[key];
+    });
+  }
+
+  function setLang(lang) {
+    localStorage.setItem('mamey_landing_lang', lang);
+    if (lang === 'en') {
+      location.reload(); // simplest reliable way back to the hardcoded EN source
+    } else {
+      applyLang(lang);
+    }
+  }
+
+  (function init() {
+    const saved = localStorage.getItem('mamey_landing_lang') || 'en';
+    applyLang(saved);
+  })();
+</script>
 
 </body>
 </html>

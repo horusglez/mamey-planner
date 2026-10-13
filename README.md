@@ -2,6 +2,12 @@
 
 Una app de nutrición y recomposición corporal **gratuita, sin anuncios y sin límites artificiales** — pensada para que cualquier persona, sin importar su presupuesto, pueda tener mejores hábitos alimenticios y avanzar hacia su objetivo físico.
 
+**Código abierto.** Página de presentación: https://mameyplanner.hjmg.mx
+
+## ¿Por qué "Mamey"?
+
+En México, al mamey (o zapote) le decimos coloquialmente así también a alguien musculoso, fuerte y "todo grandote" — "está bien mamey" es una forma común de describir a alguien mamado. De ahí el nombre: una app que te ayuda a construir ese físico, con una mascota que literalmente "crece" contigo según tu constancia.
+
 ## Misión
 
 Ayudar a las personas a construir mejores hábitos alimenticios y alcanzar su recomposición corporal u objetivos físicos, eliminando las barreras de costo, complejidad y publicidad que imponen las apps de nutrición comerciales.
@@ -36,10 +42,17 @@ Ser la alternativa gratuita y de código abierto más completa frente a apps com
 - Recuperación de cuenta sin depender de un servidor de correo (código de recuperación de un solo uso).
 - Exportación completa de tus propios datos en cualquier momento.
 - Onboarding guiado paso a paso para quien no sabe nada de nutrición ni de tecnología.
+- **Asistente de IA**: genera un plan de comidas completo según tu meta, y un chat de nutrición que conoce tu objetivo y lo que llevas comido hoy (usa tu propia API key).
+- Notificaciones push con hora aleatoria (estilo Duolingo) si no has registrado nada en el día.
+- Instalable como app (PWA) en cualquier dispositivo.
 
 ## Estado del proyecto
 
-🚧 **En desarrollo activo.** Corre como app web local (Docker). Aún no es público ni de código abierto — eso llega cuando la v1 esté estable.
+🚧 **En desarrollo activo**, pero ya de código abierto. Corre como app web (Docker). Aún no tiene build de producción optimizado ni pruebas automatizadas — ver Roadmap.
+
+## Seguridad
+
+`docker-compose.yml` trae secretos de **desarrollo** (JWT, cifrado de API keys, llaves VAPID de push) ya generados para que el proyecto corra out-of-the-box en local. **Si vas a desplegar esto en un servidor real o expuesto a internet, regenera los tres antes:** `JWT_SECRET`, `AI_KEY_ENCRYPTION_SECRET` y el par `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY` (este último con `npx web-push generate-vapid-keys`).
 
 ## Cómo correrlo localmente
 
@@ -67,9 +80,8 @@ docker-compose up -d --build
 
 - [ ] Build de producción (actualmente corre en modo desarrollo)
 - [ ] Apps nativas (iOS/Android) con HealthKit / Health Connect
-- [ ] Liberación como código abierto
 - [ ] Pruebas automatizadas
 
 ## Licencia
 
-Por definir — el proyecto se liberará como código abierto cuando alcance una versión estable.
+MIT — ver [LICENSE](LICENSE). Úsala, modifícala, lo que quieras.
