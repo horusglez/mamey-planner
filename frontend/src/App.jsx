@@ -11,14 +11,16 @@ import Settings from './pages/Settings.jsx';
 import Onboarding from './pages/Onboarding.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
 import { setToken } from './api/client.js';
+import { useLang } from './i18n/LangContext.jsx';
 
 export default function App() {
   const [token, setTokenState] = useState(localStorage.getItem('mamey_token'));
   const [onboarded, setOnboarded] = useState(localStorage.getItem('mamey_onboarded') === 'true');
+  const { t } = useLang();
 
-  function handleAuth(t) {
-    setToken(t);
-    setTokenState(t);
+  function handleAuth(authToken) {
+    setToken(authToken);
+    setTokenState(authToken);
   }
 
   function logout() {
@@ -35,7 +37,7 @@ export default function App() {
     return (
       <div className="app-shell">
         <header className="hero">
-          <span className="hero-title">🥭 Mamey Planner</span>
+          <span className="hero-title">{t('app.title')}</span>
         </header>
         <main>
           <Routes>
@@ -52,12 +54,12 @@ export default function App() {
     return (
       <div className="app-shell">
         <header className="hero">
-          <span className="hero-title">🥭 Mamey Planner</span>
+          <span className="hero-title">{t('app.title')}</span>
         </header>
         <main>
           <Onboarding onFinish={finishOnboarding} />
           <button className="secondary" onClick={finishOnboarding} style={{ marginTop: 8 }}>
-            Saltar, yo lo configuro después
+            {t('app.onboarding.skip')}
           </button>
         </main>
       </div>
@@ -67,7 +69,7 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="hero">
-        <span className="hero-title">🥭 Mamey Planner</span>
+        <span className="hero-title">{t('app.title')}</span>
         <Link to="/settings" className="settings-link">⚙️</Link>
       </header>
       <main>
@@ -82,11 +84,11 @@ export default function App() {
         </Routes>
       </main>
       <nav className="tabbar">
-        <NavLink to="/" end className={({ isActive }) => (isActive ? 'active' : '')}>Hoy</NavLink>
-        <NavLink to="/log" className={({ isActive }) => (isActive ? 'active' : '')}>Registrar</NavLink>
-        <NavLink to="/metrics" className={({ isActive }) => (isActive ? 'active' : '')}>Medidas</NavLink>
-        <NavLink to="/goals" className={({ isActive }) => (isActive ? 'active' : '')}>Meta</NavLink>
-        <NavLink to="/ai" className={({ isActive }) => (isActive ? 'active' : '')}>IA</NavLink>
+        <NavLink to="/" end className={({ isActive }) => (isActive ? 'active' : '')}>{t('app.nav.today')}</NavLink>
+        <NavLink to="/log" className={({ isActive }) => (isActive ? 'active' : '')}>{t('app.nav.log')}</NavLink>
+        <NavLink to="/metrics" className={({ isActive }) => (isActive ? 'active' : '')}>{t('app.nav.metrics')}</NavLink>
+        <NavLink to="/goals" className={({ isActive }) => (isActive ? 'active' : '')}>{t('app.nav.goals')}</NavLink>
+        <NavLink to="/ai" className={({ isActive }) => (isActive ? 'active' : '')}>{t('app.nav.ai')}</NavLink>
       </nav>
     </div>
   );

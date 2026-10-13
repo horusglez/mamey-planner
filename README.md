@@ -6,6 +6,8 @@ A **free, ad-free, no-artificial-limits** nutrition and body recomposition app �
 
 **Open source.** Live site: https://mameyplanner.hjmg.mx
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-ffdd00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/surohsusej)
+
 ## Why "Mamey"?
 
 In Mexico, "mamey" (the fruit, also called zapote) is also slang for someone muscular, strong, built — "está bien mamey" is a common, affectionate way to describe someone jacked. Hence the name: an app that helps you build that physique, with a mascot that literally "grows" with you as you stay consistent.
@@ -92,3 +94,7 @@ MIT — see [LICENSE](LICENSE). Use it, modify it, whatever you want.
 ## Contributing
 
 Issues and pull requests are welcome at [github.com/horusglez/mamey-planner](https://github.com/horusglez/mamey-planner).
+
+## Support this project
+
+Mamey Planner is free and always will be. If it's useful to you, you can [buy me a coffee](https://buymeacoffee.com/surohsusej) — completely optional, never required for any feature.

@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
+import { useLang } from '../i18n/LangContext.jsx';
 
 const ELEMENT_ID = 'mamey-barcode-scanner';
 
 export default function BarcodeScanner({ onDetected, onClose }) {
   const scannerRef = useRef(null);
+  const { t } = useLang();
 
   useEffect(() => {
     const scanner = new Html5Qrcode(ELEMENT_ID);
@@ -22,7 +24,7 @@ export default function BarcodeScanner({ onDetected, onClose }) {
         },
         () => {} // per-frame "nothing found yet" noise, ignored
       )
-      .catch(() => onClose('No se pudo acceder a la cámara.'));
+      .catch(() => onClose(t('barcode.cameraError')));
 
     return () => {
       stopped = true;
@@ -33,8 +35,8 @@ export default function BarcodeScanner({ onDetected, onClose }) {
   return (
     <div className="card">
       <div id={ELEMENT_ID} style={{ borderRadius: 12, overflow: 'hidden' }} />
-      <p className="muted">Apunta al código de barras del producto.</p>
-      <button className="secondary" onClick={() => onClose()}>Cancelar</button>
+      <p className="muted">{t('barcode.pointHint')}</p>
+      <button className="secondary" onClick={() => onClose()}>{t('barcode.cancel')}</button>
     </div>
   );
 }

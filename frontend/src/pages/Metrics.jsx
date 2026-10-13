@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
+import { useLang } from '../i18n/LangContext.jsx';
 
 function todayStr() {
   return new Date().toISOString().slice(0, 10);
 }
 
-function WeightChart({ history }) {
+function WeightChart({ history, t }) {
   const points = history
     .filter((m) => m.weight_kg != null)
     .map((m) => ({ date: m.recorded_at.slice(0, 10), weight: Number(m.weight_kg) }))
     .sort((a, b) => (a.date < b.date ? -1 : 1));
 
-  if (points.length < 2) return <p className="muted">Registra al menos 2 pesos para ver tu gráfica.</p>;
+  if (points.length < 2) return <p className="muted">{t('metrics.chartHint')}</p>;
 
   const weights = points.map((p) => p.weight);
   const min = Math.min(...weights);
@@ -46,6 +47,7 @@ function WeightChart({ history }) {
 }
 
 export default function Metrics() {
+  const { t } = useLang();
   const [recordedAt, setRecordedAt] = useState(todayStr());
   const [weightKg, setWeightKg] = useState('');
   const [bodyFatPct, setBodyFatPct] = useState('');
@@ -101,25 +103,25 @@ export default function Metrics() {
 
   return (
     <div>
-      <h1>Medidas corporales</h1>
+      <h1>{t('metrics.title')}</h1>
 
       <div className="card">
-        <WeightChart history={history} />
+        <WeightChart history={history} t={t} />
       </div>
 
       <form onSubmit={handleSubmit}>
         <input type="date" max={todayStr()} value={recordedAt} onChange={(e) => setRecordedAt(e.target.value)} />
-        <input type="number" step="0.1" placeholder="peso (kg)" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} />
-        <input type="number" step="0.1" placeholder="% grasa (opcional)" value={bodyFatPct} onChange={(e) => setBodyFatPct(e.target.value)} />
-        <input type="number" step="0.1" placeholder="cintura cm (opcional)" value={waistCm} onChange={(e) => setWaistCm(e.target.value)} />
+        <input type="number" step="0.1" placeholder={t('metrics.weight')} value={weightKg} onChange={(e) => setWeightKg(e.target.value)} />
+        <input type="number" step="0.1" placeholder={t('metrics.bodyFatOptional')} value={bodyFatPct} onChange={(e) => setBodyFatPct(e.target.value)} />
+        <input type="number" step="0.1" placeholder={t('metrics.waistOptional')} value={waistCm} onChange={(e) => setWaistCm(e.target.value)} />
         {error && <p className="error">{error}</p>}
         <div className="row">
-          {isEditing && <button type="button" className="secondary" onClick={resetForm}>Cancelar edición</button>}
-          <button type="submit">{isEditing ? 'Actualizar registro' : 'Guardar registro de hoy'}</button>
+          {isEditing && <button type="button" className="secondary" onClick={resetForm}>{t('metrics.cancelEdit')}</button>}
+          <button type="submit">{isEditing ? t('metrics.update') : t('metrics.saveToday')}</button>
         </div>
       </form>
 
-      <h3>Historial</h3>
+      <h3>{t('metrics.history')}</h3>
       {history.map((m) => (
         <div key={m.id} className="list-item">
           <span style={{ cursor: 'pointer' }} onClick={() => editRow(m)}>

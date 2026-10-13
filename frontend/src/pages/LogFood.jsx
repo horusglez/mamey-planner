@@ -4,8 +4,10 @@ import { api } from '../api/client.js';
 import { isSpeechSupported, startListening, parseSpokenFood } from '../lib/speech.js';
 import { fileToBase64 } from '../lib/image.js';
 import BarcodeScanner from '../components/BarcodeScanner.jsx';
+import { useLang } from '../i18n/LangContext.jsx';
 
 export default function LogFood() {
+  const { t } = useLang();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -61,7 +63,7 @@ export default function LogFood() {
         method: 'POST',
         body: { foodId: selected.id, mealType, quantityG },
       });
-      setMessage(`${selected.name} agregado.`);
+      setMessage(t('logfood.addedMsg', { name: selected.name }));
       setSelected(null);
       setQuery('');
       setResults([]);
@@ -96,7 +98,7 @@ export default function LogFood() {
         setQuery(spokenQuery);
         if (spokenQuantity) setQuantity(spokenQuantity);
       },
-      onError: (err) => setError(`No entendí bien (${err}), intenta de nuevo o escribe.`),
+      onError: (err) => setError(t('logfood.voiceError', { err })),
       onEnd: () => setListening(false),
     });
   }
@@ -215,7 +217,7 @@ export default function LogFood() {
       for (const item of toAdd) {
         await api('/logs', { method: 'POST', body: { foodId: item.id, mealType, quantityG: Number(item.grams) } });
       }
-      setMessage(`${toAdd.length} alimento(s) agregado(s) de la foto.`);
+      setMessage(t('logfood.addedFromPhoto', { count: toAdd.length }));
       setAiResults([]);
       loadToday();
     } catch (err) {
@@ -223,13 +225,22 @@ export default function LogFood() {
     }
   }
 
+  const mealOptions = (
+    <>
+      <option value="breakfast">{t('logfood.breakfast')}</option>
+      <option value="lunch">{t('logfood.lunch')}</option>
+      <option value="dinner">{t('logfood.dinner')}</option>
+      <option value="snack">{t('logfood.snack')}</option>
+    </>
+  );
+
   return (
     <div>
-      <h1>Registrar alimento</h1>
+      <h1>{t('logfood.title')}</h1>
       {!selected && (
         <>
           <div className="row">
-            <input placeholder="buscar alimento..." value={query} onChange={(e) => setQuery(e.target.value)} />
+            <input placeholder={t('logfood.searchPlaceholder')} value={query} onChange={(e) => setQuery(e.target.value)} />
             {speechSupported && (
               <button
                 type="button"
@@ -252,18 +263,18 @@ export default function LogFood() {
             )}
           </div>
           {!speechSupported && (
-            <p className="muted">💡 En iPhone: toca el micrófono del teclado para dictar aquí.</p>
+            <p className="muted">{t('logfood.iphoneHint')}</p>
           )}
 
           {!aiConfig?.configured && (
-            <p className="muted">📸 Foto con IA: <Link to="/settings">configúrala en Ajustes</Link>.</p>
+            <p className="muted">{t('logfood.aiPhotoHint')} <Link to="/settings">{t('logfood.configureInSettings')}</Link>.</p>
           )}
 
-          {analyzing && <p className="muted">Analizando foto...</p>}
+          {analyzing && <p className="muted">{t('logfood.analyzing')}</p>}
 
           {aiResults.length > 0 && (
             <div className="card">
-              <h3>Detectado en la foto</h3>
+              <h3>{t('logfood.detectedInPhoto')}</h3>
               {aiResults.map((item) => (
                 <div key={item.id} className="list-item">
                   <label style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
@@ -285,14 +296,11 @@ export default function LogFood() {
                 </div>
               ))}
               <select value={mealType} onChange={(e) => setMealType(e.target.value)} style={{ marginTop: 10 }}>
-                <option value="breakfast">Desayuno</option>
-                <option value="lunch">Comida</option>
-                <option value="dinner">Cena</option>
-                <option value="snack">Snack</option>
+                {mealOptions}
               </select>
-              <p className="muted">Estimado por IA — revisa las cantidades antes de agregar.</p>
-              <button onClick={addAiResults}>Agregar seleccionados</button>
-              <button className="secondary" onClick={() => setAiResults([])}>Descartar</button>
+              <p className="muted">{t('logfood.aiEstimateNote')}</p>
+              <button onClick={addAiResults}>{t('logfood.addSelected')}</button>
+              <button className="secondary" onClick={() => setAiResults([])}>{t('logfood.discard')}</button>
             </div>
           )}
 
@@ -307,7 +315,7 @@ export default function LogFood() {
           )}
 
           <div className="card">
-            <h3>Importar receta por URL</h3>
+            <h3>{t('logfood.importRecipeTitle')}</h3>
             <div className="row">
               <input
                 placeholder="https://..."
@@ -315,10 +323,10 @@ export default function LogFood() {
                 onChange={(e) => setRecipeUrl(e.target.value)}
               />
               <button style={{ maxWidth: 120 }} disabled={!recipeUrl || importing} onClick={importRecipe}>
-                {importing ? 'Leyendo...' : 'Importar'}
+                {importing ? t('logfood.importing') : t('logfood.import')}
               </button>
             </div>
-            <p className="muted">Solo funciona con sitios que publican info nutricional estructurada (schema.org).</p>
+            <p className="muted">{t('logfood.recipeNote')}</p>
           </div>
 
           {results.map((food) => (
@@ -329,38 +337,38 @@ export default function LogFood() {
           ))}
 
           {!showCustom && (
-            <p className="muted">¿No lo encuentras? <a href="#" onClick={(e) => { e.preventDefault(); setShowCustom(true); }}>Crea tu propio alimento.</a></p>
+            <p className="muted">{t('logfood.notFound')} <a href="#" onClick={(e) => { e.preventDefault(); setShowCustom(true); }}>{t('logfood.createCustom')}</a></p>
           )}
           {showCustom && (
             <div className="card">
-              <h3>{editingFoodId ? 'Editar alimento' : 'Alimento personalizado'}</h3>
-              <p className="muted">Valores por cada 100 gramos.</p>
-              <input placeholder="nombre" value={customForm.name} onChange={(e) => updateCustomForm('name', e.target.value)} />
-              <input placeholder="marca (opcional)" value={customForm.brand} onChange={(e) => updateCustomForm('brand', e.target.value)} />
+              <h3>{editingFoodId ? t('logfood.editFood') : t('logfood.customFood')}</h3>
+              <p className="muted">{t('logfood.per100g')}</p>
+              <input placeholder={t('logfood.name')} value={customForm.name} onChange={(e) => updateCustomForm('name', e.target.value)} />
+              <input placeholder={t('logfood.brandOptional')} value={customForm.brand} onChange={(e) => updateCustomForm('brand', e.target.value)} />
               <div className="row">
-                <input type="number" placeholder="kcal/100g" value={customForm.caloriesPer100g} onChange={(e) => updateCustomForm('caloriesPer100g', e.target.value)} />
-                <input type="number" placeholder="proteína g" value={customForm.proteinG} onChange={(e) => updateCustomForm('proteinG', e.target.value)} />
+                <input type="number" placeholder={t('logfood.caloriesPer100g')} value={customForm.caloriesPer100g} onChange={(e) => updateCustomForm('caloriesPer100g', e.target.value)} />
+                <input type="number" placeholder={t('logfood.proteinG')} value={customForm.proteinG} onChange={(e) => updateCustomForm('proteinG', e.target.value)} />
               </div>
               <div className="row">
-                <input type="number" placeholder="carbs g" value={customForm.carbsG} onChange={(e) => updateCustomForm('carbsG', e.target.value)} />
-                <input type="number" placeholder="grasa g" value={customForm.fatG} onChange={(e) => updateCustomForm('fatG', e.target.value)} />
+                <input type="number" placeholder={t('logfood.carbsG')} value={customForm.carbsG} onChange={(e) => updateCustomForm('carbsG', e.target.value)} />
+                <input type="number" placeholder={t('logfood.fatG')} value={customForm.fatG} onChange={(e) => updateCustomForm('fatG', e.target.value)} />
               </div>
               <div className="row">
-                <input type="number" placeholder="fibra g (opcional)" value={customForm.fiberG} onChange={(e) => updateCustomForm('fiberG', e.target.value)} />
-                <input type="number" placeholder="azúcar g (opcional)" value={customForm.sugarG} onChange={(e) => updateCustomForm('sugarG', e.target.value)} />
+                <input type="number" placeholder={t('logfood.fiberOptional')} value={customForm.fiberG} onChange={(e) => updateCustomForm('fiberG', e.target.value)} />
+                <input type="number" placeholder={t('logfood.sugarOptional')} value={customForm.sugarG} onChange={(e) => updateCustomForm('sugarG', e.target.value)} />
               </div>
-              <input type="number" placeholder="sodio mg (opcional)" value={customForm.sodiumMg} onChange={(e) => updateCustomForm('sodiumMg', e.target.value)} />
+              <input type="number" placeholder={t('logfood.sodiumOptional')} value={customForm.sodiumMg} onChange={(e) => updateCustomForm('sodiumMg', e.target.value)} />
               <button disabled={!customForm.name || !customForm.caloriesPer100g || creatingCustom} onClick={createCustomFood}>
-                {creatingCustom ? 'Guardando...' : editingFoodId ? 'Guardar cambios' : 'Crear y registrar'}
+                {creatingCustom ? t('logfood.saving') : editingFoodId ? t('logfood.saveChanges') : t('logfood.createAndLog')}
               </button>
-              <button className="secondary" onClick={() => { setShowCustom(false); setEditingFoodId(null); }}>Cancelar</button>
+              <button className="secondary" onClick={() => { setShowCustom(false); setEditingFoodId(null); }}>{t('logfood.cancel')}</button>
             </div>
           )}
         </>
       )}
       {selected && (
         <div className="card">
-          <h3>{selected.name} {isRecipe && <span className="muted">(receta)</span>}</h3>
+          <h3>{selected.name} {isRecipe && <span className="muted">{t('logfood.recipe')}</span>}</h3>
           <div className="row">
             <input
               type="number"
@@ -369,24 +377,21 @@ export default function LogFood() {
               onChange={(e) => setQuantity(e.target.value)}
             />
             <select value={mealType} onChange={(e) => setMealType(e.target.value)}>
-              <option value="breakfast">Desayuno</option>
-              <option value="lunch">Comida</option>
-              <option value="dinner">Cena</option>
-              <option value="snack">Snack</option>
+              {mealOptions}
             </select>
           </div>
-          <p className="muted">{isRecipe ? 'porciones' : 'gramos'}</p>
+          <p className="muted">{isRecipe ? t('logfood.servings') : t('logfood.grams')}</p>
           <p className="muted">
             {Math.round((selected.calories_per_100g * quantityG) / 100)} kcal ·{' '}
             {Math.round((selected.protein_g * quantityG) / 100)}g prot ·{' '}
             {Math.round((selected.carbs_g * quantityG) / 100)}g carbs ·{' '}
-            {Math.round((selected.fat_g * quantityG) / 100)}g grasa
+            {Math.round((selected.fat_g * quantityG) / 100)}g {t('logfood.fatLabel')}
           </p>
           {(selected.fiber_g > 0 || selected.sugar_g > 0 || selected.sodium_mg > 0) && (
             <p className="muted">
-              {selected.fiber_g > 0 && <>fibra {Math.round((selected.fiber_g * quantityG) / 100)}g · </>}
-              {selected.sugar_g > 0 && <>azúcar {Math.round((selected.sugar_g * quantityG) / 100)}g · </>}
-              {selected.sodium_mg > 0 && <>sodio {Math.round((selected.sodium_mg * quantityG) / 100)}mg</>}
+              {selected.fiber_g > 0 && <>{t('logfood.fiber')} {Math.round((selected.fiber_g * quantityG) / 100)}g · </>}
+              {selected.sugar_g > 0 && <>{t('logfood.sugar')} {Math.round((selected.sugar_g * quantityG) / 100)}g · </>}
+              {selected.sodium_mg > 0 && <>{t('logfood.sodium')} {Math.round((selected.sodium_mg * quantityG) / 100)}mg</>}
             </p>
           )}
           {selected.micros && Object.keys(selected.micros).length > 0 && (
@@ -396,17 +401,17 @@ export default function LogFood() {
               ))}
             </p>
           )}
-          <button onClick={addLog}>Agregar</button>
+          <button onClick={addLog}>{t('logfood.add')}</button>
           {selected.source === 'custom' && selected.created_by === myUserId && (
-            <button className="secondary" onClick={startEditFood}>Editar este alimento</button>
+            <button className="secondary" onClick={startEditFood}>{t('logfood.editThisFood')}</button>
           )}
-          <button className="secondary" onClick={() => setSelected(null)}>Cancelar</button>
+          <button className="secondary" onClick={() => setSelected(null)}>{t('logfood.cancel')}</button>
         </div>
       )}
       {error && <p className="error">{error}</p>}
       {message && <p className="muted">{message}</p>}
 
-      <h3 style={{ marginTop: 24 }}>Hoy</h3>
+      <h3 style={{ marginTop: 24 }}>{t('logfood.todayHeading')}</h3>
       {todayLogs.map((log) => (
         editingLogId === log.id ? (
           <div key={log.id} className="card">
@@ -414,18 +419,15 @@ export default function LogFood() {
             <div className="row">
               <input type="number" value={editQuantity} onChange={(e) => setEditQuantity(e.target.value)} />
               <select value={editMealType} onChange={(e) => setEditMealType(e.target.value)}>
-                <option value="breakfast">Desayuno</option>
-                <option value="lunch">Comida</option>
-                <option value="dinner">Cena</option>
-                <option value="snack">Snack</option>
+                {mealOptions}
               </select>
             </div>
-            <button onClick={() => saveEditLog(log.id)}>Guardar</button>
-            <button className="secondary" onClick={() => setEditingLogId(null)}>Cancelar</button>
+            <button onClick={() => saveEditLog(log.id)}>{t('logfood.save')}</button>
+            <button className="secondary" onClick={() => setEditingLogId(null)}>{t('logfood.cancel')}</button>
           </div>
         ) : (
           <div key={log.id} className="list-item" style={{ cursor: 'pointer' }} onClick={() => startEditLog(log)}>
-            <span>{log.food_name} ({Math.round(log.quantity_g)}g) · {log.meal_type}</span>
+            <span>{log.food_name} ({Math.round(log.quantity_g)}g) · {t(`logfood.${log.meal_type}`)}</span>
             <span>
               {Math.round(log.calories)} kcal{' '}
               <a href="#" onClick={(e) => { e.stopPropagation(); e.preventDefault(); removeLog(log.id); }}>✕</a>

@@ -3,8 +3,10 @@ import { api, downloadFile } from '../api/client.js';
 import AiProviderSettings from '../components/AiProviderSettings.jsx';
 import { isPushSupported, enablePush, disablePush } from '../lib/push.js';
 import { isPasskeySupported, registerPasskey } from '../lib/passkey.js';
+import { useLang } from '../i18n/LangContext.jsx';
 
 export default function Settings({ onLogout }) {
+  const { t, lang, setLang } = useLang();
   const [aiConfig, setAiConfig] = useState(null);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -22,6 +24,7 @@ export default function Settings({ onLogout }) {
   const [passkeys, setPasskeys] = useState([]);
   const [passkeyError, setPasskeyError] = useState('');
   const [passkeyBusy, setPasskeyBusy] = useState(false);
+  const [coffeeDismissed, setCoffeeDismissed] = useState(() => localStorage.getItem('mamey_coffee_dismissed') === 'true');
   const passkeySupported = isPasskeySupported();
   const pushSupported = isPushSupported();
 
@@ -33,11 +36,16 @@ export default function Settings({ onLogout }) {
     api('/webauthn/list').then(setPasskeys).catch(() => {});
   }
 
+  function dismissCoffee() {
+    localStorage.setItem('mamey_coffee_dismissed', 'true');
+    setCoffeeDismissed(true);
+  }
+
   async function addPasskey() {
     setPasskeyError('');
     setPasskeyBusy(true);
     try {
-      const deviceName = window.prompt('¿Cómo le llamamos a este dispositivo? (ej. "mi iPhone", "laptop trabajo")', '') || null;
+      const deviceName = window.prompt(t('settings.passkeys.namePrompt'), '') || null;
       await registerPasskey(deviceName);
       loadPasskeys();
     } catch (err) {
@@ -75,7 +83,7 @@ export default function Settings({ onLogout }) {
     setTestMessage('');
     try {
       await api('/push/test', { method: 'POST' });
-      setTestMessage('Enviada — debería llegarte en unos segundos.');
+      setTestMessage(t('settings.reminders.testSent'));
     } catch (err) {
       setPushError(err.message);
     }
@@ -105,7 +113,7 @@ export default function Settings({ onLogout }) {
     setPasswordMessage('');
     try {
       await api('/auth/change-password', { method: 'POST', body: { currentPassword, newPassword } });
-      setPasswordMessage('Contraseña actualizada.');
+      setPasswordMessage(t('settings.password.updated'));
       setCurrentPassword('');
       setNewPassword('');
     } catch (err) {
@@ -127,110 +135,125 @@ export default function Settings({ onLogout }) {
 
   return (
     <div>
-      <h1>Ajustes</h1>
+      <h1>{t('settings.title')}</h1>
 
       <div className="card">
-        <h3>IA para fotos de comida</h3>
+        <h3>{t('settings.language')}</h3>
+        <div className="lang-toggle">
+          <button className={lang === 'es' ? '' : 'secondary'} onClick={() => setLang('es')}>Español</button>
+          <button className={lang === 'en' ? '' : 'secondary'} onClick={() => setLang('en')}>English</button>
+        </div>
+      </div>
+
+      <div className="card">
+        <h3>{t('settings.ai.title')}</h3>
         {aiConfig?.configured ? (
           <>
-            <p className="muted">Proveedor activo: <strong>{aiConfig.provider}</strong></p>
-            <button className="danger" onClick={disconnectAi}>Desconectar / cambiar proveedor</button>
+            <p className="muted">{t('settings.ai.activeProvider')} <strong>{aiConfig.provider}</strong></p>
+            <button className="danger" onClick={disconnectAi}>{t('settings.ai.disconnect')}</button>
           </>
         ) : (
-          <p className="muted">No configurado. El escaneo de foto con IA en "Registrar" no estará disponible hasta que configures un proveedor aquí.</p>
+          <p className="muted">{t('settings.ai.notConfigured')}</p>
         )}
       </div>
 
       {!aiConfig?.configured && <AiProviderSettings current={aiConfig} onSaved={setAiConfig} />}
 
       <div className="card">
-        <h3>Passkeys</h3>
+        <h3>{t('settings.passkeys.title')}</h3>
         {passkeySupported ? (
           <>
-            <p className="muted">
-              Inicia sesión con Face ID, Touch ID, Windows Hello o una llave de seguridad — sin escribir contraseña. Puedes registrar uno por cada dispositivo que uses.
-            </p>
+            <p className="muted">{t('settings.passkeys.lede')}</p>
             {passkeys.map((pk) => (
               <div key={pk.id} className="list-item">
-                <span>🔑 {pk.device_name || 'Passkey sin nombre'}</span>
+                <span>🔑 {pk.device_name || t('settings.passkeys.unnamed')}</span>
                 <a href="#" onClick={(e) => { e.preventDefault(); removePasskey(pk.id); }}>✕</a>
               </div>
             ))}
             {passkeyError && <p className="error">{passkeyError}</p>}
             <button disabled={passkeyBusy} onClick={addPasskey}>
-              {passkeyBusy ? 'Registrando...' : '+ Agregar passkey de este dispositivo'}
+              {passkeyBusy ? t('settings.passkeys.registering') : t('settings.passkeys.add')}
             </button>
           </>
         ) : (
-          <p className="muted">Tu navegador no soporta passkeys.</p>
+          <p className="muted">{t('settings.passkeys.notSupported')}</p>
         )}
       </div>
 
       <div className="card">
-        <h3>Cambiar contraseña</h3>
+        <h3>{t('settings.password.title')}</h3>
         <form onSubmit={changePassword}>
-          <input type="password" placeholder="contraseña actual" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
-          <input type="password" placeholder="nueva contraseña" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+          <input type="password" placeholder={t('settings.password.current')} value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
+          <input type="password" placeholder={t('settings.password.new')} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
           {passwordError && <p className="error">{passwordError}</p>}
           {passwordMessage && <p className="muted">{passwordMessage}</p>}
-          <button type="submit">Actualizar contraseña</button>
+          <button type="submit">{t('settings.password.submit')}</button>
         </form>
       </div>
 
       <div className="card">
-        <h3>Código de recuperación</h3>
-        <p className="muted">
-          Es tu única forma de recuperar la cuenta si olvidas tu contraseña (no hay correo configurado). Si no guardaste el que te dimos al registrarte, genera uno nuevo aquí — el viejo queda invalidado.
-        </p>
+        <h3>{t('settings.recovery.title')}</h3>
+        <p className="muted">{t('settings.recovery.lede')}</p>
         {newRecoveryCode ? (
           <div className="howto-box">
             <p style={{ fontSize: 20, fontWeight: 800, textAlign: 'center', letterSpacing: 1, margin: '4px 0' }}>
               {newRecoveryCode}
             </p>
-            <p className="muted">Guárdalo ya — no se vuelve a mostrar.</p>
+            <p className="muted">{t('settings.recovery.saveNow')}</p>
           </div>
         ) : (
           <>
             {recoveryError && <p className="error">{recoveryError}</p>}
             <button className="secondary" disabled={recoveryBusy} onClick={regenerateRecoveryCode}>
-              {recoveryBusy ? 'Generando...' : 'Generar código nuevo'}
+              {recoveryBusy ? t('settings.recovery.generating') : t('settings.recovery.generate')}
             </button>
           </>
         )}
       </div>
 
       <div className="card">
-        <h3>Recordatorios</h3>
+        <h3>{t('settings.reminders.title')}</h3>
         {pushSupported ? (
           <>
-            <p className="muted">
-              Si no has registrado nada, te mandamos una notificación en algún momento del día (como Duolingo — hora random, no siempre la misma) pa' que no pierdas tu racha. Funciona aunque la app esté cerrada.
-            </p>
+            <p className="muted">{t('settings.reminders.lede')}</p>
             {pushError && <p className="error">{pushError}</p>}
             {testMessage && <p className="muted">{testMessage}</p>}
             <button className={pushStatus?.subscribed ? 'danger' : ''} disabled={pushBusy || !pushStatus} onClick={togglePush}>
-              {pushBusy ? 'Procesando...' : pushStatus?.subscribed ? 'Desactivar recordatorios' : 'Activar recordatorios'}
+              {pushBusy ? t('settings.reminders.processing') : pushStatus?.subscribed ? t('settings.reminders.disable') : t('settings.reminders.enable')}
             </button>
             {pushStatus?.subscribed && (
-              <button className="secondary" onClick={sendTestNotification}>Enviar notificación de prueba</button>
+              <button className="secondary" onClick={sendTestNotification}>{t('settings.reminders.sendTest')}</button>
             )}
           </>
         ) : (
-          <p className="muted">Tu navegador no soporta notificaciones push (común en Safari de iPhone fuera de la app instalada — intenta después de "Agregar a inicio").</p>
+          <p className="muted">{t('settings.reminders.notSupported')}</p>
         )}
       </div>
 
       <div className="card">
-        <h3>Tus datos</h3>
-        <p className="muted">Descarga todo lo que has registrado (perfil, metas, comidas, medidas) en un archivo que puedes guardar o abrir en otra parte.</p>
+        <h3>{t('settings.data.title')}</h3>
+        <p className="muted">{t('settings.data.lede')}</p>
         {exportError && <p className="error">{exportError}</p>}
         <button className="secondary" disabled={exporting} onClick={handleExport}>
-          {exporting ? 'Preparando...' : 'Descargar mis datos'}
+          {exporting ? t('settings.data.preparing') : t('settings.data.download')}
         </button>
       </div>
 
+      {!coffeeDismissed && (
+        <div className="card">
+          <h3>{t('settings.coffee.title')}</h3>
+          <p className="muted">{t('settings.coffee.lede')}</p>
+          <a href="https://buymeacoffee.com/surohsusej" target="_blank" rel="noopener noreferrer">
+            <button className="secondary">{t('settings.coffee.button')}</button>
+          </a>
+          <a href="#" onClick={(e) => { e.preventDefault(); dismissCoffee(); }} className="muted" style={{ fontSize: 13 }}>
+            {t('settings.coffee.alreadyDonated')}
+          </a>
+        </div>
+      )}
+
       <button className="secondary" onClick={onLogout} style={{ marginTop: 24 }}>
-        Cerrar sesión
+        {t('settings.logout')}
       </button>
     </div>
   );

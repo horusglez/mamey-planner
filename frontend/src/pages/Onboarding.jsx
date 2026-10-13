@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { api } from '../api/client.js';
-import { MASCOT_LEVELS } from '../lib/mascot.js';
-import { GOAL_OPTIONS } from '../lib/goalOptions.js';
+import { getMascotLevels } from '../lib/mascot.js';
+import { getGoalOptions } from '../lib/goalOptions.js';
+import { useLang } from '../i18n/LangContext.jsx';
 
 export default function Onboarding({ onFinish }) {
   const [step, setStep] = useState(0);
@@ -11,6 +12,9 @@ export default function Onboarding({ onFinish }) {
   const [suggestion, setSuggestion] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const { t } = useLang();
+  const GOAL_OPTIONS = getGoalOptions(t);
+  const MASCOT_LEVELS = getMascotLevels(t);
 
   async function handleCalculate() {
     setError('');
@@ -61,17 +65,17 @@ export default function Onboarding({ onFinish }) {
       {step === 0 && (
         <div>
           <img src={MASCOT_LEVELS[0].img} alt="Mamey" style={{ width: 120, height: 120, borderRadius: 20, display: 'block', margin: '0 auto 16px' }} />
-          <h1 style={{ justifyContent: 'center' }}>¡Bienvenido!</h1>
-          <p>Mamey Planner te ayuda a comer mejor y avanzar hacia tu meta física — bajar grasa, ganar músculo, o ambas.</p>
-          <p className="muted">Son solo 3 preguntas rápidas y ya tienes tu plan de calorías y macros listo. Vamos.</p>
-          <button onClick={() => setStep(1)}>Empezar →</button>
+          <h1 style={{ justifyContent: 'center' }}>{t('onboarding.welcome.title')}</h1>
+          <p>{t('onboarding.welcome.p1')}</p>
+          <p className="muted">{t('onboarding.welcome.p2')}</p>
+          <button onClick={() => setStep(1)}>{t('onboarding.welcome.start')}</button>
         </div>
       )}
 
       {step === 1 && (
         <div>
-          <h1>¿Cuál es tu objetivo?</h1>
-          <p className="muted">Esto decide cuántas calorías y cuánta proteína te vamos a sugerir.</p>
+          <h1>{t('onboarding.goal.title')}</h1>
+          <p className="muted">{t('onboarding.goal.lede')}</p>
           {GOAL_OPTIONS.map((g) => (
             <div
               key={g.value}
@@ -82,33 +86,33 @@ export default function Onboarding({ onFinish }) {
               <p className="muted">{g.desc}</p>
               {goalType === g.value && (
                 <div className="goal-detail">
-                  <p><strong>¿Es para ti?</strong> {g.forWho}</p>
-                  <p><strong>Qué esperar:</strong> {g.expect}</p>
+                  <p><strong>{t('onboarding.goal.forYou')}</strong> {g.forWho}</p>
+                  <p><strong>{t('onboarding.goal.expect')}</strong> {g.expect}</p>
                   <p className="goal-motivation">💬 {g.motivation}</p>
                 </div>
               )}
             </div>
           ))}
-          <button disabled={!goalType} onClick={() => setStep(2)}>Continuar →</button>
+          <button disabled={!goalType} onClick={() => setStep(2)}>{t('onboarding.goal.continue')}</button>
         </div>
       )}
 
       {step === 2 && (
         <div>
-          <h1>¿Cuál es tu peso actual?</h1>
-          <p className="muted">Lo usamos pa' calcular cuánta energía gasta tu cuerpo al día (tu TDEE) y de ahí sacar tu meta de calorías.</p>
+          <h1>{t('onboarding.weight.title')}</h1>
+          <p className="muted">{t('onboarding.weight.lede')}</p>
           <input
             type="number"
             step="0.1"
-            placeholder="peso en kg"
+            placeholder={t('onboarding.weight.placeholder')}
             value={weightKg}
             onChange={(e) => setWeightKg(e.target.value)}
           />
           {error && <p className="error">{error}</p>}
           <div className="row">
-            <button className="secondary" onClick={() => setStep(1)}>← Atrás</button>
+            <button className="secondary" onClick={() => setStep(1)}>{t('onboarding.back')}</button>
             <button disabled={!weightKg || busy} onClick={handleCalculate}>
-              {busy ? 'Calculando...' : 'Calcular mi meta →'}
+              {busy ? t('onboarding.calculating') : t('onboarding.calculate')}
             </button>
           </div>
         </div>
@@ -116,45 +120,43 @@ export default function Onboarding({ onFinish }) {
 
       {step === 3 && suggestion && (
         <div>
-          <h1>Tu meta sugerida</h1>
+          <h1>{t('onboarding.suggestion.title')}</h1>
           <p className="muted">
-            Tu cuerpo gasta aprox. <strong>{suggestion.tdee} kcal/día</strong> (TDEE). Con base en tu objetivo, te sugerimos:
+            {t('onboarding.suggestion.lede', { tdee: suggestion.tdee })}
           </p>
           <div className="card">
-            <div className="list-item"><span>Calorías</span><strong>{suggestion.calories} kcal</strong></div>
-            <div className="list-item"><span>Proteína</span><strong>{suggestion.proteinG} g</strong></div>
-            <div className="list-item"><span>Carbohidratos</span><strong>{suggestion.carbsG} g</strong></div>
-            <div className="list-item"><span>Grasa</span><strong>{suggestion.fatG} g</strong></div>
+            <div className="list-item"><span>{t('onboarding.calories')}</span><strong>{suggestion.calories} kcal</strong></div>
+            <div className="list-item"><span>{t('onboarding.protein')}</span><strong>{suggestion.proteinG} g</strong></div>
+            <div className="list-item"><span>{t('onboarding.carbs')}</span><strong>{suggestion.carbsG} g</strong></div>
+            <div className="list-item"><span>{t('onboarding.fat')}</span><strong>{suggestion.fatG} g</strong></div>
           </div>
-          <p className="muted">
-            Proteína alta a propósito: te ayuda a conservar músculo sin importar el objetivo. Podrás ajustar estos números después en la pestaña "Meta".
-          </p>
+          <p className="muted">{t('onboarding.suggestion.proteinNote')}</p>
           {goalType !== 'maintain' && (
             <>
-              <p className="muted">Peso objetivo (opcional) — pa' ver tu progreso real en "Hoy":</p>
-              <input type="number" step="0.1" placeholder="peso objetivo kg" value={targetWeightKg} onChange={(e) => setTargetWeightKg(e.target.value)} />
+              <p className="muted">{t('onboarding.targetWeight.lede')}</p>
+              <input type="number" step="0.1" placeholder={t('onboarding.targetWeight.placeholder')} value={targetWeightKg} onChange={(e) => setTargetWeightKg(e.target.value)} />
             </>
           )}
           <p className="goal-motivation">💬 {GOAL_OPTIONS.find((g) => g.value === goalType)?.motivation}</p>
           {error && <p className="error">{error}</p>}
           <div className="row">
-            <button className="secondary" onClick={() => setStep(2)}>← Atrás</button>
-            <button disabled={busy} onClick={handleSaveGoal}>{busy ? 'Guardando...' : 'Usar esta meta →'}</button>
+            <button className="secondary" onClick={() => setStep(2)}>{t('onboarding.back')}</button>
+            <button disabled={busy} onClick={handleSaveGoal}>{busy ? t('onboarding.saving') : t('onboarding.useGoal')}</button>
           </div>
         </div>
       )}
 
       {step === 4 && (
         <div>
-          <h1>Listo, así se usa</h1>
-          <div className="card"><h3>🏠 Hoy</h3><p className="muted">Ve cuántas calorías y macros llevas hoy contra tu meta.</p></div>
-          <div className="card"><h3>➕ Registrar</h3><p className="muted">Busca un alimento, pega la URL de una receta, o anota tu comida. Se suma a "Hoy" al momento.</p></div>
-          <div className="card"><h3>📏 Medidas</h3><p className="muted">Anota tu peso (y % de grasa o cintura si los mides) cada pocos días pa' ver tu progreso real.</p></div>
-          <div className="card"><h3>🎯 Meta</h3><p className="muted">Aquí puedes recalcular o cambiar tu objetivo cuando quieras.</p></div>
+          <h1>{t('onboarding.tour.title')}</h1>
+          <div className="card"><h3>{t('onboarding.tour.today.title')}</h3><p className="muted">{t('onboarding.tour.today.body')}</p></div>
+          <div className="card"><h3>{t('onboarding.tour.log.title')}</h3><p className="muted">{t('onboarding.tour.log.body')}</p></div>
+          <div className="card"><h3>{t('onboarding.tour.metrics.title')}</h3><p className="muted">{t('onboarding.tour.metrics.body')}</p></div>
+          <div className="card"><h3>{t('onboarding.tour.goals.title')}</h3><p className="muted">{t('onboarding.tour.goals.body')}</p></div>
 
           <div className="card">
-            <h3>Tu mascota crece contigo</h3>
-            <p className="muted">Entre más días seguidos registres, más "crece" en el dashboard. Es tu racha, hecha personaje.</p>
+            <h3>{t('onboarding.tour.mascot.title')}</h3>
+            <p className="muted">{t('onboarding.tour.mascot.body')}</p>
             <div className="row" style={{ marginTop: 10 }}>
               {MASCOT_LEVELS.map((l) => (
                 <img key={l.level} src={l.img} alt={l.title} style={{ width: '100%', height: 52, objectFit: 'cover', borderRadius: 8 }} />
@@ -162,7 +164,7 @@ export default function Onboarding({ onFinish }) {
             </div>
           </div>
 
-          <button onClick={onFinish}>Entendido, vamos →</button>
+          <button onClick={onFinish}>{t('onboarding.tour.finish')}</button>
         </div>
       )}
     </div>

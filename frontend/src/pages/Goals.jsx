@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
-import { GOAL_OPTIONS } from '../lib/goalOptions.js';
-
-const GOAL_LABELS = Object.fromEntries(GOAL_OPTIONS.map((g) => [g.value, `${g.emoji} ${g.title}`]));
+import { getGoalOptions } from '../lib/goalOptions.js';
+import { useLang } from '../i18n/LangContext.jsx';
 
 export default function Goals() {
+  const { t } = useLang();
+  const GOAL_OPTIONS = getGoalOptions(t);
+  const GOAL_LABELS = Object.fromEntries(GOAL_OPTIONS.map((g) => [g.value, `${g.emoji} ${g.title}`]));
+
   const [goalType, setGoalType] = useState(null);
   const [suggestion, setSuggestion] = useState(null);
   const [targetWeightKg, setTargetWeightKg] = useState('');
@@ -85,29 +88,29 @@ export default function Goals() {
 
   return (
     <div>
-      <h1>Meta</h1>
+      <h1>{t('goals.title')}</h1>
       {active && (
         <div className="card">
-          <h3>Meta activa: {GOAL_LABELS[active.goal_type] || active.goal_type}</h3>
-          <p>{active.target_calories} kcal · {active.target_protein_g}g prot · {active.target_carbs_g}g carbs · {active.target_fat_g}g grasa</p>
+          <h3>{t('goals.active', { goal: GOAL_LABELS[active.goal_type] || active.goal_type })}</h3>
+          <p>{active.target_calories} kcal · {active.target_protein_g}g {t('goals.proteinAbbr')} · {active.target_carbs_g}g {t('goals.carbsAbbr')} · {active.target_fat_g}g {t('logfood.fatLabel')}</p>
           {!editingWeightGoal ? (
             <p className="muted">
-              Peso objetivo: {active.target_weight_kg ? `${active.target_weight_kg} kg` : 'sin definir'}{' '}
-              <a href="#" onClick={(e) => { e.preventDefault(); startEditWeightGoal(); }}>editar</a>
+              {t('goals.targetWeight', { weight: active.target_weight_kg ? `${active.target_weight_kg} kg` : t('goals.targetWeightUnset') })}{' '}
+              <a href="#" onClick={(e) => { e.preventDefault(); startEditWeightGoal(); }}>{t('goals.edit')}</a>
             </p>
           ) : (
             <div className="row">
-              <input type="number" step="0.1" placeholder="peso objetivo kg" value={weightGoalInput} onChange={(e) => setWeightGoalInput(e.target.value)} />
-              <button style={{ maxWidth: 100 }} onClick={saveWeightGoal}>Guardar</button>
-              <button style={{ maxWidth: 100 }} className="secondary" onClick={() => setEditingWeightGoal(false)}>Cancelar</button>
+              <input type="number" step="0.1" placeholder={t('goals.weightPlaceholder')} value={weightGoalInput} onChange={(e) => setWeightGoalInput(e.target.value)} />
+              <button style={{ maxWidth: 100 }} onClick={saveWeightGoal}>{t('goals.save')}</button>
+              <button style={{ maxWidth: 100 }} className="secondary" onClick={() => setEditingWeightGoal(false)}>{t('goals.cancel')}</button>
             </div>
           )}
-          <button className="danger" onClick={handleDelete}>Eliminar meta</button>
+          <button className="danger" onClick={handleDelete}>{t('goals.delete')}</button>
         </div>
       )}
 
-      <h3>{active ? 'Cambiar de objetivo' : '¿Cuál es tu objetivo?'}</h3>
-      <p className="muted">Elige con cuidado — cada uno implica un ritmo y una estrategia distinta.</p>
+      <h3>{active ? t('goals.changeGoal') : t('goals.whichGoal')}</h3>
+      <p className="muted">{t('goals.chooseCarefully')}</p>
       {GOAL_OPTIONS.map((g) => (
         <div
           key={g.value}
@@ -118,8 +121,8 @@ export default function Goals() {
           <p className="muted">{g.desc}</p>
           {goalType === g.value && (
             <div className="goal-detail">
-              <p><strong>¿Es para ti?</strong> {g.forWho}</p>
-              <p><strong>Qué esperar:</strong> {g.expect}</p>
+              <p><strong>{t('goals.forYou')}</strong> {g.forWho}</p>
+              <p><strong>{t('goals.expect')}</strong> {g.expect}</p>
               <p className="goal-motivation">💬 {g.motivation}</p>
             </div>
           )}
@@ -127,32 +130,30 @@ export default function Goals() {
       ))}
 
       {goalType && !suggestion && (
-        <button disabled={busy} onClick={handleSuggest}>{busy ? 'Calculando...' : 'Calcular mi meta →'}</button>
+        <button disabled={busy} onClick={handleSuggest}>{busy ? t('goals.calculating') : t('goals.calculate')}</button>
       )}
       {error && <p className="error">{error}</p>}
 
       {suggestion && (
         <div className="card">
-          <h3>Tu meta con {selectedOption?.title.toLowerCase()}</h3>
-          <p className="muted">TDEE estimado: {suggestion.tdee} kcal/día</p>
-          <div className="list-item"><span>Calorías</span><strong>{suggestion.calories} kcal</strong></div>
-          <div className="list-item"><span>Proteína</span><strong>{suggestion.proteinG} g</strong></div>
-          <div className="list-item"><span>Carbohidratos</span><strong>{suggestion.carbsG} g</strong></div>
-          <div className="list-item"><span>Grasa</span><strong>{suggestion.fatG} g</strong></div>
+          <h3>{t('goals.yourGoalWith', { goal: selectedOption?.title.toLowerCase() })}</h3>
+          <p className="muted">{t('goals.tdeeEstimate', { tdee: suggestion.tdee })}</p>
+          <div className="list-item"><span>{t('goals.calories')}</span><strong>{suggestion.calories} kcal</strong></div>
+          <div className="list-item"><span>{t('goals.protein')}</span><strong>{suggestion.proteinG} g</strong></div>
+          <div className="list-item"><span>{t('goals.carbs')}</span><strong>{suggestion.carbsG} g</strong></div>
+          <div className="list-item"><span>{t('goals.fat')}</span><strong>{suggestion.fatG} g</strong></div>
           {goalType !== 'maintain' && (
             <>
-              <p className="muted" style={{ marginTop: 10 }}>Peso objetivo (opcional) — pa' ver tu progreso real en "Hoy":</p>
-              <input type="number" step="0.1" placeholder="peso objetivo kg" value={targetWeightKg} onChange={(e) => setTargetWeightKg(e.target.value)} />
+              <p className="muted" style={{ marginTop: 10 }}>{t('goals.targetWeightOptional')}</p>
+              <input type="number" step="0.1" placeholder={t('goals.weightPlaceholder')} value={targetWeightKg} onChange={(e) => setTargetWeightKg(e.target.value)} />
             </>
           )}
           <p className="goal-motivation" style={{ marginTop: 10 }}>💬 {selectedOption?.motivation}</p>
-          <button onClick={handleSave}>Usar esta meta</button>
+          <button onClick={handleSave}>{t('goals.useGoal')}</button>
         </div>
       )}
 
-      <p className="muted" style={{ marginTop: 16 }}>
-        Necesitas sexo, fecha de nacimiento y altura en tu perfil, además de al menos un registro de peso en "Medidas", para calcular la sugerencia.
-      </p>
+      <p className="muted" style={{ marginTop: 16 }}>{t('goals.profileHint')}</p>
     </div>
   );
 }

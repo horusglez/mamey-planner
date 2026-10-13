@@ -6,6 +6,8 @@ Una app de nutrición y recomposición corporal **gratuita, sin anuncios y sin l
 
 **Código abierto.** Página de presentación: https://mameyplanner.hjmg.mx
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Invítame%20un%20café-ffdd00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/surohsusej)
+
 ## ¿Por qué "Mamey"?
 
 En México, al mamey (o zapote) le decimos coloquialmente así también a alguien musculoso, fuerte y "todo grandote" — "está bien mamey" es una forma común de describir a alguien mamado. De ahí el nombre: una app que te ayuda a construir ese físico, con una mascota que literalmente "crece" contigo según tu constancia.
@@ -87,3 +89,7 @@ docker-compose up -d --build
 ## Licencia
 
 MIT — ver [LICENSE](LICENSE). Úsala, modifícala, lo que quieras.
+
+## Apoya el proyecto
+
+Mamey Planner es gratis y siempre lo será. Si te sirve, puedes [invitarme un café](https://buymeacoffee.com/surohsusej) — totalmente opcional, nunca necesario para ninguna función.

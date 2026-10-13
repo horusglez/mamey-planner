@@ -3,18 +3,19 @@ import { Link } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { mascotForStreak } from '../lib/mascot.js';
 import { computeWeightProgress } from '../lib/weightProgress.js';
+import { useLang } from '../i18n/LangContext.jsx';
 
 const STREAK_MILESTONES = [7, 14, 30, 60, 100];
 
-const PERIOD_OPTIONS = [
-  { value: 'week', label: 'Semanal' },
-  { value: 'biweek', label: 'Bisemanal' },
-  { value: 'month', label: 'Mensual' },
-  { value: 'bimonth', label: 'Bimestral' },
-  { value: 'quarter', label: 'Trimestral' },
-  { value: 'semester', label: 'Semestral' },
-  { value: 'year', label: 'Anual' },
-];
+const PERIOD_KEYS = {
+  week: 'dashboard.period.week',
+  biweek: 'dashboard.period.biweek',
+  month: 'dashboard.period.month',
+  bimonth: 'dashboard.period.bimonth',
+  quarter: 'dashboard.period.quarter',
+  semester: 'dashboard.period.semester',
+  year: 'dashboard.period.year',
+};
 
 function Bar({ value, target, color }) {
   const pct = target ? Math.min(100, Math.round((value / target) * 100)) : 0;
@@ -25,12 +26,12 @@ function Bar({ value, target, color }) {
   );
 }
 
-function streakMessage(streak, loggedToday) {
-  if (streak === 0) return 'Registra hoy y empieza tu racha.';
-  if (!loggedToday) return `Llevas ${streak} día${streak === 1 ? '' : 's'}... ¡registra hoy pa\' no perderla!`;
-  if (streak < 3) return '¡Vas arrancando, sigue así!';
-  if (streak < 7) return 'Ya es hábito, no lo sueltes.';
-  return '¡Imparable!';
+function streakMessage(t, streak, loggedToday) {
+  if (streak === 0) return t('dashboard.streak.start');
+  if (!loggedToday) return t('dashboard.streak.keepGoing', { streak, plural: streak === 1 ? '' : 's' });
+  if (streak < 3) return t('dashboard.streak.early');
+  if (streak < 7) return t('dashboard.streak.habit');
+  return t('dashboard.streak.unstoppable');
 }
 
 function todayStr() {
@@ -43,21 +44,15 @@ function shiftDate(dateStr, days) {
   return d.toISOString().slice(0, 10);
 }
 
-function formatLabel(dateStr) {
-  if (dateStr === todayStr()) return 'Hoy';
-  if (dateStr === shiftDate(todayStr(), -1)) return 'Ayer';
+function formatLabel(t, dateStr) {
+  if (dateStr === todayStr()) return t('dashboard.today');
+  if (dateStr === shiftDate(todayStr(), -1)) return t('dashboard.yesterday');
   return dateStr;
 }
 
 // Suggests a common food to close the gap on whichever macro is furthest
 // behind, instead of just showing a cold number.
-const FOOD_HINTS = {
-  protein: ['un yogurt griego', '100g de pollo', '3 huevos'],
-  carbs: ['una taza de arroz', 'un plátano', 'una papa mediana'],
-  fat: ['un puñado de nueces', 'medio aguacate', 'una cucharada de aceite de oliva'],
-};
-
-function contextualTip(totals, goal) {
+function contextualTip(t, totals, goal) {
   if (!goal) return null;
   const gaps = {
     protein: goal.target_protein_g - totals.protein_g,
@@ -68,12 +63,14 @@ function contextualTip(totals, goal) {
   const [macro, gap] = biggest;
   const thresholds = { protein: 20, carbs: 30, fat: 12 };
   if (gap < thresholds[macro]) return null;
-  const label = { protein: 'proteína', carbs: 'carbohidratos', fat: 'grasa' }[macro];
-  const hint = FOOD_HINTS[macro][Math.floor(Math.random() * FOOD_HINTS[macro].length)];
-  return `Te faltan ${Math.round(gap)}g de ${label} — ${hint} te acerca bastante.`;
+  const label = t(`dashboard.food.${macro}`);
+  const hintKeys = [`dashboard.food.${macro}1`, `dashboard.food.${macro}2`, `dashboard.food.${macro}3`];
+  const hint = t(hintKeys[Math.floor(Math.random() * hintKeys.length)]);
+  return t('dashboard.tip', { gap: Math.round(gap), label, hint });
 }
 
 export default function Dashboard() {
+  const { t } = useLang();
   const [date, setDate] = useState(todayStr());
   const [summary, setSummary] = useState(null);
   const [streak, setStreak] = useState(null);
@@ -107,7 +104,7 @@ export default function Dashboard() {
       const key = `mamey_celebrated_streak_${streak.streak}`;
       if (!localStorage.getItem(key)) {
         localStorage.setItem(key, 'true');
-        setCelebration(`🎉 ¡${streak.streak} días de racha! Eso ya no es suerte, es hábito.`);
+        setCelebration(t('dashboard.celebration.streak', { streak: streak.streak }));
       }
     }
   }, [streak]);
@@ -119,91 +116,98 @@ export default function Dashboard() {
       const key = `mamey_celebrated_weightgoal_${summary.goal.id}`;
       if (!localStorage.getItem(key)) {
         localStorage.setItem(key, 'true');
-        setCelebration(`🏆 ¡Llegaste a tu peso objetivo (${summary.goal.target_weight_kg}kg)! Ahora toca sostenerlo.`);
+        setCelebration(t('dashboard.celebration.weightGoal', { weight: summary.goal.target_weight_kg }));
       }
     }
   }, [summary, weightHistory]);
 
   if (error) return <p className="error">{error}</p>;
-  if (!summary) return <p>Cargando...</p>;
+  if (!summary) return <p>{t('dashboard.loading')}</p>;
 
   const { totals, goal } = summary;
   const isToday = date === todayStr();
   const isAtMinDate = minDate != null && date <= minDate;
-  const tip = isToday ? contextualTip(totals, goal) : null;
+  const tip = isToday ? contextualTip(t, totals, goal) : null;
   const weightProgress = goal?.target_weight_kg ? computeWeightProgress(weightHistory, goal.target_weight_kg) : null;
+  const mascot = streak ? mascotForStreak(streak.streak, t) : null;
 
   return (
     <div>
       {celebration && (
         <div className="card celebration-card" onClick={() => setCelebration(null)}>
           <p>{celebration}</p>
-          <span className="muted">Toca pa' cerrar</span>
+          <span className="muted">{t('dashboard.celebration.close')}</span>
         </div>
       )}
 
       <div className="date-nav">
-        <button className="icon-btn" disabled={isAtMinDate} onClick={() => setDate(shiftDate(date, -1))} aria-label="Día anterior">‹</button>
-        <h1>{formatLabel(date)}</h1>
-        <button className="icon-btn" disabled={isToday} onClick={() => setDate(shiftDate(date, 1))} aria-label="Día siguiente">›</button>
+        <button className="icon-btn" disabled={isAtMinDate} onClick={() => setDate(shiftDate(date, -1))} aria-label={t('dashboard.prevDay')}>‹</button>
+        <h1>{formatLabel(t, date)}</h1>
+        <button className="icon-btn" disabled={isToday} onClick={() => setDate(shiftDate(date, 1))} aria-label={t('dashboard.nextDay')}>›</button>
       </div>
 
       {isToday && streak && (
         <div className="card streak-card">
-          <img src={mascotForStreak(streak.streak).img} alt="" className="streak-mascot" />
+          <img src={mascot.img} alt="" className="streak-mascot" />
           <div>
-            <h3>{mascotForStreak(streak.streak).title}</h3>
-            <p className="muted">{streak.streak} día{streak.streak === 1 ? '' : 's'} de racha — {streakMessage(streak.streak, streak.loggedToday)}</p>
+            <h3>{mascot.title}</h3>
+            <p className="muted">{t('dashboard.streakDays', { streak: streak.streak, plural: streak.streak === 1 ? '' : 's', message: streakMessage(t, streak.streak, streak.loggedToday) })}</p>
           </div>
         </div>
       )}
 
       {!goal && (
         <div className="card">
-          <p>Aún no tienes una meta activa.</p>
-          <Link to="/goals">Configura tu meta →</Link>
+          <p>{t('dashboard.noGoal')}</p>
+          <Link to="/goals">{t('dashboard.configureGoal')}</Link>
         </div>
       )}
 
       {weightProgress?.targetWeightKg && !weightProgress.reached && (
         <div className="card">
-          <h3>Progreso de peso</h3>
+          <h3>{t('dashboard.weightProgress.title')}</h3>
           <p className="muted">
-            {weightProgress.currentWeight}kg actual → {weightProgress.targetWeightKg}kg objetivo
-            {' '}({Math.abs(weightProgress.targetWeightKg - weightProgress.currentWeight).toFixed(1)}kg por recorrer)
+            {t('dashboard.weightProgress.summary', {
+              current: weightProgress.currentWeight,
+              target: weightProgress.targetWeightKg,
+              diff: Math.abs(weightProgress.targetWeightKg - weightProgress.currentWeight).toFixed(1),
+            })}
           </p>
           {weightProgress.weeklyRate != null ? (
             weightProgress.movingRightDirection ? (
               <p className="muted">
-                A tu ritmo actual (~{Math.abs(weightProgress.weeklyRate).toFixed(2)}kg/semana), llegas en
-                {' '}~{Math.ceil(weightProgress.weeksRemaining)} semana{Math.ceil(weightProgress.weeksRemaining) === 1 ? '' : 's'}.
+                {t('dashboard.weightProgress.onTrack', {
+                  rate: Math.abs(weightProgress.weeklyRate).toFixed(2),
+                  weeks: Math.ceil(weightProgress.weeksRemaining),
+                  plural: Math.ceil(weightProgress.weeksRemaining) === 1 ? '' : 's',
+                })}
               </p>
             ) : (
-              <p className="muted">Tu tendencia reciente va en sentido contrario a tu meta — revisa tu consistencia.</p>
+              <p className="muted">{t('dashboard.weightProgress.wrongDirection')}</p>
             )
           ) : (
-            <p className="muted">Registra más pesos pa' ver tu ritmo real.</p>
+            <p className="muted">{t('dashboard.weightProgress.needMore')}</p>
           )}
         </div>
       )}
 
       <div className="card">
-        <h3>Calorías</h3>
+        <h3>{t('dashboard.calories')}</h3>
         <p>{Math.round(totals.calories)} {goal ? `/ ${goal.target_calories} kcal` : 'kcal'}</p>
         {goal && <Bar value={totals.calories} target={goal.target_calories} color="#2f7d44" />}
       </div>
       <div className="card">
-        <h3>Proteína</h3>
+        <h3>{t('dashboard.protein')}</h3>
         <p>{Math.round(totals.protein_g)} {goal ? `/ ${goal.target_protein_g} g` : 'g'}</p>
         {goal && <Bar value={totals.protein_g} target={goal.target_protein_g} color="#c1440e" />}
       </div>
       <div className="card">
-        <h3>Carbohidratos</h3>
+        <h3>{t('dashboard.carbs')}</h3>
         <p>{Math.round(totals.carbs_g)} {goal ? `/ ${goal.target_carbs_g} g` : 'g'}</p>
         {goal && <Bar value={totals.carbs_g} target={goal.target_carbs_g} color="#d4a017" />}
       </div>
       <div className="card">
-        <h3>Grasa</h3>
+        <h3>{t('dashboard.fat')}</h3>
         <p>{Math.round(totals.fat_g)} {goal ? `/ ${goal.target_fat_g} g` : 'g'}</p>
         {goal && <Bar value={totals.fat_g} target={goal.target_fat_g} color="#3a6ea5" />}
       </div>
@@ -212,20 +216,24 @@ export default function Dashboard() {
 
       <div className="card">
         <div className="row" style={{ alignItems: 'center', marginBottom: 4 }}>
-          <h3 style={{ margin: 0 }}>Resumen</h3>
+          <h3 style={{ margin: 0 }}>{t('dashboard.summary')}</h3>
           <select
             value={periodRange}
             onChange={(e) => setPeriodRange(e.target.value)}
             style={{ margin: 0, width: 'auto', flex: 'none', padding: '6px 10px', fontSize: 13 }}
           >
-            {PERIOD_OPTIONS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+            {Object.entries(PERIOD_KEYS).map(([value, key]) => <option key={value} value={value}>{t(key)}</option>)}
           </select>
         </div>
         {period && period.loggedDaysCount > 0 ? (
           <>
             <p className="muted">
-              Promedio por día registrado: {period.average.calories} kcal · {period.average.protein_g}g prot ·{' '}
-              {period.average.carbs_g}g carbs · {period.average.fat_g}g grasa
+              {t('dashboard.avgPerLoggedDay', {
+                cal: period.average.calories,
+                prot: period.average.protein_g,
+                carbs: period.average.carbs_g,
+                fat: period.average.fat_g,
+              })}
             </p>
             <div className={`week-bars ${period.buckets.length > 9 ? 'many' : ''}`}>
               {period.buckets.map((b) => {
@@ -241,7 +249,7 @@ export default function Dashboard() {
             </div>
           </>
         ) : (
-          <p className="muted">Sin registros en este periodo todavía.</p>
+          <p className="muted">{t('dashboard.noRecordsYet')}</p>
         )}
       </div>
     </div>

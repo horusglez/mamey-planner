@@ -1,15 +1,18 @@
 // Maps a streak (consecutive days logging food) to the mascot's growth level.
 // The same character "levels up" as the habit sticks.
-const LEVELS = [
-  { max: 0, level: 1, title: 'Nivel 1 — El Hueso', img: '/mascot/level-1.jpg' },
-  { max: 2, level: 2, title: 'Nivel 2 — Adaptación', img: '/mascot/level-2.jpg' },
-  { max: 6, level: 3, title: 'Nivel 3 — En Crecimiento', img: '/mascot/level-3.jpg' },
-  { max: 13, level: 4, title: 'Nivel 4 — Consolidación', img: '/mascot/level-4.jpg' },
-  { max: Infinity, level: 5, title: 'Nivel 5 — Mamey Maduro', img: '/mascot/level-5.jpg' },
+const LEVEL_META = [
+  { max: 0, level: 1, titleKey: 'mascot.level1', img: '/mascot/level-1.jpg' },
+  { max: 2, level: 2, titleKey: 'mascot.level2', img: '/mascot/level-2.jpg' },
+  { max: 6, level: 3, titleKey: 'mascot.level3', img: '/mascot/level-3.jpg' },
+  { max: 13, level: 4, titleKey: 'mascot.level4', img: '/mascot/level-4.jpg' },
+  { max: Infinity, level: 5, titleKey: 'mascot.level5', img: '/mascot/level-5.jpg' },
 ];
 
-export function mascotForStreak(streak) {
-  return LEVELS.find((l) => streak <= l.max);
+export function mascotForStreak(streak, t) {
+  const level = LEVEL_META.find((l) => streak <= l.max);
+  return { ...level, title: t(level.titleKey) };
 }
 
-export const MASCOT_LEVELS = LEVELS;
+export function getMascotLevels(t) {
+  return LEVEL_META.map((l) => ({ ...l, title: t(l.titleKey) }));
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client.js';
+import { useLang } from '../i18n/LangContext.jsx';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -8,6 +9,7 @@ export default function ForgotPassword() {
   const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
+  const { t } = useLang();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -26,31 +28,31 @@ export default function ForgotPassword() {
   if (result) {
     return (
       <div>
-        <h1>Contraseña actualizada</h1>
+        <h1>{t('forgot.resultTitle')}</h1>
         <div className="card">
-          <p className="muted">Tu código de recuperación anterior ya no sirve. Aquí tienes uno nuevo — guárdalo, no se vuelve a mostrar:</p>
+          <p className="muted">{t('forgot.resultBody')}</p>
           <p style={{ fontSize: 22, fontWeight: 800, textAlign: 'center', letterSpacing: 1, margin: '12px 0' }}>
             {result.newRecoveryCode}
           </p>
         </div>
-        <Link to="/"><button>Ir a iniciar sesión →</button></Link>
+        <Link to="/"><button>{t('forgot.goLogin')}</button></Link>
       </div>
     );
   }
 
   return (
     <div>
-      <h1>Recuperar contraseña</h1>
-      <p className="muted">Usa el código de recuperación que guardaste cuando creaste tu cuenta.</p>
+      <h1>{t('forgot.title')}</h1>
+      <p className="muted">{t('forgot.lede')}</p>
       <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="usuario" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input placeholder="código de recuperación (XXXX-XXXX-XXXX)" value={recoveryCode} onChange={(e) => setRecoveryCode(e.target.value)} required />
-        <input type="password" placeholder="nueva contraseña" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+        <input type="text" placeholder={t('forgot.username')} value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input placeholder={t('forgot.code')} value={recoveryCode} onChange={(e) => setRecoveryCode(e.target.value)} required />
+        <input type="password" placeholder={t('forgot.newPassword')} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
         {error && <p className="error">{error}</p>}
-        <button type="submit">Restablecer contraseña</button>
+        <button type="submit">{t('forgot.submit')}</button>
       </form>
       <p className="muted">
-        ¿No tienes tu código? No hay forma de recuperarlo sin él — tendrías que crear una cuenta nueva. <Link to="/">Volver</Link>
+        {t('forgot.noCode')} <Link to="/">{t('forgot.back')}</Link>
       </p>
     </div>
   );

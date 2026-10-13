@@ -1,11 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client.js';
+import { useLang } from '../i18n/LangContext.jsx';
 
-const MEAL_LABELS = { breakfast: 'Desayuno', lunch: 'Comida', dinner: 'Cena', snack: 'Snack' };
 const MEAL_ORDER = ['breakfast', 'lunch', 'dinner', 'snack'];
 
 export default function Assistant() {
+  const { t } = useLang();
+  const MEAL_LABELS = {
+    breakfast: t('assistant.meal.breakfast'),
+    lunch: t('assistant.meal.lunch'),
+    dinner: t('assistant.meal.dinner'),
+    snack: t('assistant.meal.snack'),
+  };
   const [aiConfig, setAiConfig] = useState(null);
   const [tab, setTab] = useState('plan');
 
@@ -70,7 +77,7 @@ export default function Assistant() {
       for (const item of toAdd) {
         await api('/logs', { method: 'POST', body: { foodId: item.id, mealType: item.meal_type, quantityG: Number(item.grams) } });
       }
-      setPlanMessage(`${toAdd.length} alimento(s) agregado(s) a tu día.`);
+      setPlanMessage(t('assistant.plan.addedMsg', { count: toAdd.length }));
       setPlanItems([]);
     } catch (err) {
       setPlanError(err.message);
@@ -100,12 +107,10 @@ export default function Assistant() {
   if (!aiConfig?.configured) {
     return (
       <div>
-        <h1>Asistente IA</h1>
+        <h1>{t('assistant.title')}</h1>
         <div className="card">
-          <p className="muted">
-            Esto usa la IA que configures en Ajustes — te genera planes de comida según tu meta y responde dudas de nutrición. Aún no has configurado un proveedor.
-          </p>
-          <Link to="/settings"><button>Configurar en Ajustes →</button></Link>
+          <p className="muted">{t('assistant.notConfigured')}</p>
+          <Link to="/settings"><button>{t('assistant.configureInSettings')}</button></Link>
         </div>
       </div>
     );
@@ -117,28 +122,28 @@ export default function Assistant() {
 
   return (
     <div>
-      <h1>Asistente IA</h1>
+      <h1>{t('assistant.title')}</h1>
 
       <div className="row" style={{ marginBottom: 14 }}>
-        <button className={tab === 'plan' ? '' : 'secondary'} onClick={() => setTab('plan')}>Plan de comidas</button>
-        <button className={tab === 'chat' ? '' : 'secondary'} onClick={() => setTab('chat')}>Chat nutricional</button>
+        <button className={tab === 'plan' ? '' : 'secondary'} onClick={() => setTab('plan')}>{t('assistant.tab.plan')}</button>
+        <button className={tab === 'chat' ? '' : 'secondary'} onClick={() => setTab('chat')}>{t('assistant.tab.chat')}</button>
       </div>
 
       {tab === 'plan' && (
         <div>
           <div className="card">
-            <h3>Genera tu plan de hoy</h3>
-            <p className="muted">Basado en tu meta activa. Ajusta si quieres.</p>
+            <h3>{t('assistant.plan.generateTitle')}</h3>
+            <p className="muted">{t('assistant.plan.lede')}</p>
             <select value={mealsPerDay} onChange={(e) => setMealsPerDay(Number(e.target.value))}>
-              <option value={3}>3 comidas al día</option>
-              <option value={4}>4 comidas al día</option>
-              <option value={5}>5 comidas al día</option>
+              <option value={3}>{t('assistant.plan.meals3')}</option>
+              <option value={4}>{t('assistant.plan.meals4')}</option>
+              <option value={5}>{t('assistant.plan.meals5')}</option>
             </select>
-            <input placeholder="restricciones (opcional, ej. vegetariano, sin lactosa)" value={restrictions} onChange={(e) => setRestrictions(e.target.value)} />
-            <input placeholder="no te gusta (opcional, ej. brócoli, pescado)" value={dislikes} onChange={(e) => setDislikes(e.target.value)} />
+            <input placeholder={t('assistant.plan.restrictions')} value={restrictions} onChange={(e) => setRestrictions(e.target.value)} />
+            <input placeholder={t('assistant.plan.dislikes')} value={dislikes} onChange={(e) => setDislikes(e.target.value)} />
             {planError && <p className="error">{planError}</p>}
             {planMessage && <p className="muted">{planMessage}</p>}
-            <button disabled={generating} onClick={generatePlan}>{generating ? 'Generando...' : 'Generar plan →'}</button>
+            <button disabled={generating} onClick={generatePlan}>{generating ? t('assistant.plan.generating') : t('assistant.plan.generate')}</button>
           </div>
 
           {groupedPlan.map((group) => (
@@ -169,11 +174,11 @@ export default function Assistant() {
 
           {planItems.length > 0 && (
             <div className="row">
-              <button onClick={addPlanToToday}>Agregar seleccionados a "Hoy"</button>
+              <button onClick={addPlanToToday}>{t('assistant.plan.addToToday')}</button>
               <button className="secondary" disabled={generating} onClick={generatePlan}>
-                {generating ? 'Generando...' : 'Regenerar'}
+                {generating ? t('assistant.plan.generating') : t('assistant.plan.regenerate')}
               </button>
-              <button className="secondary" onClick={() => setPlanItems([])}>Descartar</button>
+              <button className="secondary" onClick={() => setPlanItems([])}>{t('assistant.plan.discard')}</button>
             </div>
           )}
         </div>
@@ -182,29 +187,27 @@ export default function Assistant() {
       {tab === 'chat' && (
         <div>
           <div className="row" style={{ alignItems: 'center' }}>
-            <p className="muted" style={{ marginBottom: 10, flex: 1 }}>
-              💬 No reemplaza a un nutriólogo certificado — para temas médicos, consulta a un profesional real.
-            </p>
+            <p className="muted" style={{ marginBottom: 10, flex: 1 }}>{t('assistant.chat.disclaimer')}</p>
             {chatHistory.length > 0 && (
               <button className="secondary" style={{ maxWidth: 110, marginBottom: 10 }} onClick={clearChat}>
-                Limpiar chat
+                {t('assistant.chat.clear')}
               </button>
             )}
           </div>
           <div className="chat-window">
             {chatHistory.length === 0 && (
-              <p className="muted">Pregúntale algo, por ejemplo: "¿qué como si se me antoja algo dulce?" o "dame una receta con pollo y arroz".</p>
+              <p className="muted">{t('assistant.chat.emptyHint')}</p>
             )}
             {chatHistory.map((m, i) => (
               <div key={i} className={`chat-bubble ${m.role}`}>{m.content}</div>
             ))}
-            {chatBusy && <div className="chat-bubble assistant muted">Escribiendo...</div>}
+            {chatBusy && <div className="chat-bubble assistant muted">{t('assistant.chat.writing')}</div>}
             <div ref={chatEndRef} />
           </div>
           {chatError && <p className="error">{chatError}</p>}
           <form onSubmit={sendChat} className="row">
-            <input placeholder="escribe tu pregunta..." value={chatInput} onChange={(e) => setChatInput(e.target.value)} />
-            <button type="submit" style={{ maxWidth: 90 }} disabled={chatBusy || !chatInput.trim()}>Enviar</button>
+            <input placeholder={t('assistant.chat.placeholder')} value={chatInput} onChange={(e) => setChatInput(e.target.value)} />
+            <button type="submit" style={{ maxWidth: 90 }} disabled={chatBusy || !chatInput.trim()}>{t('assistant.chat.send')}</button>
           </form>
         </div>
       )}
