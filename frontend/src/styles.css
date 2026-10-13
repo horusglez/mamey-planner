@@ -194,6 +194,35 @@ nav.tabbar a.active { color: #fff; background: linear-gradient(135deg, var(--lea
   margin: 8px 0;
 }
 
+.celebration-card {
+  background: linear-gradient(135deg, #fff3e0, #ffe3c2);
+  border: 1px solid #ffd79a;
+  text-align: center;
+  cursor: pointer;
+}
+.celebration-card p { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+
+.tip-card {
+  background: #fff8ea;
+  border: 1px solid #f3e3b8;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13.5px;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+
+.week-bars {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 6px;
+  height: 80px;
+  margin-top: 10px;
+}
+.week-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; height: 100%; }
+.week-bar { width: 100%; border-radius: 4px; }
+
 .streak-card {
   display: flex;
   align-items: center;

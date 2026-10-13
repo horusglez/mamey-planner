@@ -7,6 +7,7 @@ export default function Onboarding({ onFinish }) {
   const [step, setStep] = useState(0);
   const [goalType, setGoalType] = useState(null);
   const [weightKg, setWeightKg] = useState('');
+  const [targetWeightKg, setTargetWeightKg] = useState('');
   const [suggestion, setSuggestion] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -38,6 +39,7 @@ export default function Onboarding({ onFinish }) {
           targetProteinG: suggestion.proteinG,
           targetCarbsG: suggestion.carbsG,
           targetFatG: suggestion.fatG,
+          targetWeightKg: targetWeightKg ? Number(targetWeightKg) : null,
         },
       });
       setStep(4);
@@ -127,6 +129,12 @@ export default function Onboarding({ onFinish }) {
           <p className="muted">
             Proteína alta a propósito: te ayuda a conservar músculo sin importar el objetivo. Podrás ajustar estos números después en la pestaña "Meta".
           </p>
+          {goalType !== 'maintain' && (
+            <>
+              <p className="muted">Peso objetivo (opcional) — pa' ver tu progreso real en "Hoy":</p>
+              <input type="number" step="0.1" placeholder="peso objetivo kg" value={targetWeightKg} onChange={(e) => setTargetWeightKg(e.target.value)} />
+            </>
+          )}
           <p className="goal-motivation">💬 {GOAL_OPTIONS.find((g) => g.value === goalType)?.motivation}</p>
           {error && <p className="error">{error}</p>}
           <div className="row">

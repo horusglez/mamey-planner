@@ -50,3 +50,50 @@ dashboardRouter.get('/streak', asyncHandler(async (req, res) => {
 
   res.json({ streak, loggedToday });
 }));
+
+// Last 7 days of totals (today inclusive) plus the average per day, so trend
+// is visible instead of just one day's noise.
+dashboardRouter.get('/week', asyncHandler(async (req, res) => {
+  const result = await pool.query(
+    `SELECT
+       logged_at::date AS date,
+       COALESCE(SUM(calories), 0) AS calories,
+       COALESCE(SUM(protein_g), 0) AS protein_g,
+       COALESCE(SUM(carbs_g), 0) AS carbs_g,
+       COALESCE(SUM(fat_g), 0) AS fat_g
+     FROM food_logs
+     WHERE user_id = $1 AND logged_at::date >= CURRENT_DATE - INTERVAL '6 days'
+     GROUP BY logged_at::date`,
+    [req.userId]
+  );
+  const byDate = new Map(result.rows.map((r) => [r.date.toISOString().slice(0, 10), r]));
+
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setUTCDate(d.getUTCDate() - i);
+    const dateStr = d.toISOString().slice(0, 10);
+    const row = byDate.get(dateStr);
+    days.push({
+      date: dateStr,
+      calories: Number(row?.calories || 0),
+      protein_g: Number(row?.protein_g || 0),
+      carbs_g: Number(row?.carbs_g || 0),
+      fat_g: Number(row?.fat_g || 0),
+    });
+  }
+
+  const loggedDays = days.filter((d) => d.calories > 0);
+  const avg = (key) => (loggedDays.length ? loggedDays.reduce((a, d) => a + d[key], 0) / loggedDays.length : 0);
+
+  res.json({
+    days,
+    average: {
+      calories: Math.round(avg('calories')),
+      protein_g: Math.round(avg('protein_g')),
+      carbs_g: Math.round(avg('carbs_g')),
+      fat_g: Math.round(avg('fat_g')),
+    },
+    loggedDaysCount: loggedDays.length,
+  });
+}));

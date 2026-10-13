@@ -7,6 +7,7 @@ const GOAL_LABELS = Object.fromEntries(GOAL_OPTIONS.map((g) => [g.value, `${g.em
 export default function Goals() {
   const [goalType, setGoalType] = useState(null);
   const [suggestion, setSuggestion] = useState(null);
+  const [targetWeightKg, setTargetWeightKg] = useState('');
   const [active, setActive] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -48,11 +49,13 @@ export default function Goals() {
           targetProteinG: suggestion.proteinG,
           targetCarbsG: suggestion.carbsG,
           targetFatG: suggestion.fatG,
+          targetWeightKg: targetWeightKg ? Number(targetWeightKg) : null,
         },
       });
       setActive(saved);
       setSuggestion(null);
       setGoalType(null);
+      setTargetWeightKg('');
     } catch (err) {
       setError(err.message);
     }
@@ -67,6 +70,7 @@ export default function Goals() {
         <div className="card">
           <h3>Meta activa: {GOAL_LABELS[active.goal_type] || active.goal_type}</h3>
           <p>{active.target_calories} kcal · {active.target_protein_g}g prot · {active.target_carbs_g}g carbs · {active.target_fat_g}g grasa</p>
+          {active.target_weight_kg && <p className="muted">Peso objetivo: {active.target_weight_kg} kg</p>}
           <button className="danger" onClick={handleDelete}>Eliminar meta</button>
         </div>
       )}
@@ -104,6 +108,12 @@ export default function Goals() {
           <div className="list-item"><span>Proteína</span><strong>{suggestion.proteinG} g</strong></div>
           <div className="list-item"><span>Carbohidratos</span><strong>{suggestion.carbsG} g</strong></div>
           <div className="list-item"><span>Grasa</span><strong>{suggestion.fatG} g</strong></div>
+          {goalType !== 'maintain' && (
+            <>
+              <p className="muted" style={{ marginTop: 10 }}>Peso objetivo (opcional) — pa' ver tu progreso real en "Hoy":</p>
+              <input type="number" step="0.1" placeholder="peso objetivo kg" value={targetWeightKg} onChange={(e) => setTargetWeightKg(e.target.value)} />
+            </>
+          )}
           <p className="goal-motivation" style={{ marginTop: 10 }}>💬 {selectedOption?.motivation}</p>
           <button onClick={handleSave}>Usar esta meta</button>
         </div>
