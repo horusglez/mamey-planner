@@ -102,7 +102,7 @@ export default function Settings({ onLogout }) {
         {pushSupported ? (
           <>
             <p className="muted">
-              Si no has registrado nada para las 8pm, te mandamos una notificación pa' que no pierdas tu racha. Funciona aunque la app esté cerrada.
+              Si no has registrado nada, te mandamos una notificación en algún momento del día (como Duolingo — hora random, no siempre la misma) pa' que no pierdas tu racha. Funciona aunque la app esté cerrada.
             </p>
             {pushError && <p className="error">{pushError}</p>}
             <button className={pushStatus?.subscribed ? 'danger' : ''} disabled={pushBusy || !pushStatus} onClick={togglePush}>

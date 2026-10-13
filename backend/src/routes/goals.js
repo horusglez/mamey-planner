@@ -47,6 +47,17 @@ goalsRouter.post('/', asyncHandler(async (req, res) => {
   res.status(201).json(result.rows[0]);
 }));
 
+// Lets you adjust the target weight on your active goal without recreating it.
+goalsRouter.patch('/:id', asyncHandler(async (req, res) => {
+  const { targetWeightKg } = req.body;
+  const result = await pool.query(
+    'UPDATE goals SET target_weight_kg = $1 WHERE id = $2 AND user_id = $3 RETURNING *',
+    [targetWeightKg === null || targetWeightKg === '' ? null : Number(targetWeightKg), req.params.id, req.userId]
+  );
+  if (result.rows.length === 0) return res.status(404).json({ error: 'meta no encontrada' });
+  res.json(result.rows[0]);
+}));
+
 goalsRouter.delete('/:id', asyncHandler(async (req, res) => {
   await pool.query('DELETE FROM goals WHERE id = $1 AND user_id = $2', [req.params.id, req.userId]);
   res.status(204).end();

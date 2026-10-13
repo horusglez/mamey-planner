@@ -11,6 +11,8 @@ export default function Goals() {
   const [active, setActive] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [editingWeightGoal, setEditingWeightGoal] = useState(false);
+  const [weightGoalInput, setWeightGoalInput] = useState('');
 
   function loadActive() {
     api('/goals/active').then(setActive).catch((e) => setError(e.message));
@@ -36,6 +38,24 @@ export default function Goals() {
     if (!active) return;
     await api(`/goals/${active.id}`, { method: 'DELETE' });
     setActive(null);
+  }
+
+  function startEditWeightGoal() {
+    setWeightGoalInput(active.target_weight_kg || '');
+    setEditingWeightGoal(true);
+  }
+
+  async function saveWeightGoal() {
+    try {
+      const updated = await api(`/goals/${active.id}`, {
+        method: 'PATCH',
+        body: { targetWeightKg: weightGoalInput ? Number(weightGoalInput) : null },
+      });
+      setActive(updated);
+      setEditingWeightGoal(false);
+    } catch (err) {
+      setError(err.message);
+    }
   }
 
   async function handleSave() {
@@ -70,7 +90,18 @@ export default function Goals() {
         <div className="card">
           <h3>Meta activa: {GOAL_LABELS[active.goal_type] || active.goal_type}</h3>
           <p>{active.target_calories} kcal · {active.target_protein_g}g prot · {active.target_carbs_g}g carbs · {active.target_fat_g}g grasa</p>
-          {active.target_weight_kg && <p className="muted">Peso objetivo: {active.target_weight_kg} kg</p>}
+          {!editingWeightGoal ? (
+            <p className="muted">
+              Peso objetivo: {active.target_weight_kg ? `${active.target_weight_kg} kg` : 'sin definir'}{' '}
+              <a href="#" onClick={(e) => { e.preventDefault(); startEditWeightGoal(); }}>editar</a>
+            </p>
+          ) : (
+            <div className="row">
+              <input type="number" step="0.1" placeholder="peso objetivo kg" value={weightGoalInput} onChange={(e) => setWeightGoalInput(e.target.value)} />
+              <button style={{ maxWidth: 100 }} onClick={saveWeightGoal}>Guardar</button>
+              <button style={{ maxWidth: 100 }} className="secondary" onClick={() => setEditingWeightGoal(false)}>Cancelar</button>
+            </div>
+          )}
           <button className="danger" onClick={handleDelete}>Eliminar meta</button>
         </div>
       )}

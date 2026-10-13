@@ -51,9 +51,26 @@ dashboardRouter.get('/streak', asyncHandler(async (req, res) => {
   res.json({ streak, loggedToday });
 }));
 
-// Last 7 days of totals (today inclusive) plus the average per day, so trend
-// is visible instead of just one day's noise.
-dashboardRouter.get('/week', asyncHandler(async (req, res) => {
+// Supported summary windows and how many days of raw data each needs, plus
+// how many days get folded into one bar on the chart (so a year isn't 365
+// bars). week/biweek show one bar per day; longer ranges bucket by week or
+// month so the chart stays readable.
+const RANGES = {
+  week: { days: 7, bucketSize: 1 },
+  biweek: { days: 14, bucketSize: 1 },
+  month: { days: 30, bucketSize: 7 },
+  bimonth: { days: 60, bucketSize: 7 },
+  quarter: { days: 90, bucketSize: 7 },
+  semester: { days: 182, bucketSize: 30 },
+  year: { days: 365, bucketSize: 30 },
+};
+
+// Totals per day (today inclusive) over the requested window, bucketed and
+// averaged, so trend is visible instead of just one day's noise.
+dashboardRouter.get('/period', asyncHandler(async (req, res) => {
+  const range = RANGES[req.query.range] ? req.query.range : 'week';
+  const { days: totalDays, bucketSize } = RANGES[range];
+
   const result = await pool.query(
     `SELECT
        logged_at::date AS date,
@@ -62,14 +79,14 @@ dashboardRouter.get('/week', asyncHandler(async (req, res) => {
        COALESCE(SUM(carbs_g), 0) AS carbs_g,
        COALESCE(SUM(fat_g), 0) AS fat_g
      FROM food_logs
-     WHERE user_id = $1 AND logged_at::date >= CURRENT_DATE - INTERVAL '6 days'
+     WHERE user_id = $1 AND logged_at::date >= CURRENT_DATE - ($2::int - 1)
      GROUP BY logged_at::date`,
-    [req.userId]
+    [req.userId, totalDays]
   );
   const byDate = new Map(result.rows.map((r) => [r.date.toISOString().slice(0, 10), r]));
 
   const days = [];
-  for (let i = 6; i >= 0; i--) {
+  for (let i = totalDays - 1; i >= 0; i--) {
     const d = new Date();
     d.setUTCDate(d.getUTCDate() - i);
     const dateStr = d.toISOString().slice(0, 10);
@@ -83,17 +100,34 @@ dashboardRouter.get('/week', asyncHandler(async (req, res) => {
     });
   }
 
+  const buckets = [];
+  for (let i = 0; i < days.length; i += bucketSize) {
+    const slice = days.slice(i, i + bucketSize);
+    const loggedInBucket = slice.filter((d) => d.calories > 0);
+    const avg = (key) =>
+      loggedInBucket.length ? loggedInBucket.reduce((a, d) => a + d[key], 0) / loggedInBucket.length : 0;
+    buckets.push({
+      startDate: slice[0].date,
+      endDate: slice[slice.length - 1].date,
+      avgCalories: Math.round(avg('calories')),
+      loggedDays: loggedInBucket.length,
+      totalDays: slice.length,
+    });
+  }
+
   const loggedDays = days.filter((d) => d.calories > 0);
-  const avg = (key) => (loggedDays.length ? loggedDays.reduce((a, d) => a + d[key], 0) / loggedDays.length : 0);
+  const avgAll = (key) => (loggedDays.length ? loggedDays.reduce((a, d) => a + d[key], 0) / loggedDays.length : 0);
 
   res.json({
-    days,
+    range,
+    buckets,
     average: {
-      calories: Math.round(avg('calories')),
-      protein_g: Math.round(avg('protein_g')),
-      carbs_g: Math.round(avg('carbs_g')),
-      fat_g: Math.round(avg('fat_g')),
+      calories: Math.round(avgAll('calories')),
+      protein_g: Math.round(avgAll('protein_g')),
+      carbs_g: Math.round(avgAll('carbs_g')),
+      fat_g: Math.round(avgAll('fat_g')),
     },
     loggedDaysCount: loggedDays.length,
+    totalDays,
   });
 }));

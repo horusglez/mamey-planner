@@ -6,6 +6,16 @@ import { computeWeightProgress } from '../lib/weightProgress.js';
 
 const STREAK_MILESTONES = [7, 14, 30, 60, 100];
 
+const PERIOD_OPTIONS = [
+  { value: 'week', label: 'Semanal' },
+  { value: 'biweek', label: 'Bisemanal' },
+  { value: 'month', label: 'Mensual' },
+  { value: 'bimonth', label: 'Bimestral' },
+  { value: 'quarter', label: 'Trimestral' },
+  { value: 'semester', label: 'Semestral' },
+  { value: 'year', label: 'Anual' },
+];
+
 function Bar({ value, target, color }) {
   const pct = target ? Math.min(100, Math.round((value / target) * 100)) : 0;
   return (
@@ -67,7 +77,8 @@ export default function Dashboard() {
   const [date, setDate] = useState(todayStr());
   const [summary, setSummary] = useState(null);
   const [streak, setStreak] = useState(null);
-  const [week, setWeek] = useState(null);
+  const [periodRange, setPeriodRange] = useState(() => localStorage.getItem('mamey_period_range') || 'week');
+  const [period, setPeriod] = useState(null);
   const [weightHistory, setWeightHistory] = useState([]);
   const [minDate, setMinDate] = useState(null);
   const [celebration, setCelebration] = useState(null);
@@ -80,10 +91,14 @@ export default function Dashboard() {
 
   useEffect(() => {
     api('/dashboard/streak').then(setStreak).catch(() => {});
-    api('/dashboard/week').then(setWeek).catch(() => {});
     api('/metrics').then(setWeightHistory).catch(() => {});
     api('/auth/me').then((u) => setMinDate(u.created_at.slice(0, 10))).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('mamey_period_range', periodRange);
+    api(`/dashboard/period?range=${periodRange}`).then(setPeriod).catch(() => {});
+  }, [periodRange]);
 
   // Fires once per milestone, ever -- tracked in localStorage so it doesn't nag.
   useEffect(() => {
@@ -195,24 +210,40 @@ export default function Dashboard() {
 
       {tip && <p className="tip-card">💡 {tip}</p>}
 
-      {week && week.loggedDaysCount > 0 && (
-        <div className="card">
-          <h3>Últimos 7 días</h3>
-          <p className="muted">Promedio: {week.average.calories} kcal · {week.average.protein_g}g prot · {week.average.carbs_g}g carbs · {week.average.fat_g}g grasa</p>
-          <div className="week-bars">
-            {week.days.map((d) => {
-              const maxCal = Math.max(...week.days.map((x) => x.calories), goal?.target_calories || 1);
-              const h = maxCal ? Math.max(4, Math.round((d.calories / maxCal) * 60)) : 4;
-              return (
-                <div key={d.date} className="week-bar-col">
-                  <div className="week-bar" style={{ height: h, background: d.calories > 0 ? '#2f7d44' : '#f0ddcc' }} />
-                  <span className="muted">{d.date.slice(8, 10)}</span>
-                </div>
-              );
-            })}
-          </div>
+      <div className="card">
+        <div className="row" style={{ alignItems: 'center', marginBottom: 4 }}>
+          <h3 style={{ margin: 0 }}>Resumen</h3>
+          <select
+            value={periodRange}
+            onChange={(e) => setPeriodRange(e.target.value)}
+            style={{ margin: 0, width: 'auto', flex: 'none', padding: '6px 10px', fontSize: 13 }}
+          >
+            {PERIOD_OPTIONS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+          </select>
         </div>
-      )}
+        {period && period.loggedDaysCount > 0 ? (
+          <>
+            <p className="muted">
+              Promedio por día registrado: {period.average.calories} kcal · {period.average.protein_g}g prot ·{' '}
+              {period.average.carbs_g}g carbs · {period.average.fat_g}g grasa
+            </p>
+            <div className="week-bars">
+              {period.buckets.map((b) => {
+                const maxCal = Math.max(...period.buckets.map((x) => x.avgCalories), goal?.target_calories || 1);
+                const h = maxCal ? Math.max(4, Math.round((b.avgCalories / maxCal) * 60)) : 4;
+                return (
+                  <div key={b.endDate} className="week-bar-col">
+                    <div className="week-bar" style={{ height: h, background: b.avgCalories > 0 ? '#2f7d44' : '#f0ddcc' }} />
+                    <span className="muted">{b.endDate.slice(5)}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          <p className="muted">Sin registros en este periodo todavía.</p>
+        )}
+      </div>
     </div>
   );
 }

@@ -216,12 +216,19 @@ nav.tabbar a.active { color: #fff; background: linear-gradient(135deg, var(--lea
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  gap: 6px;
+  gap: 3px;
   height: 80px;
   margin-top: 10px;
 }
-.week-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; height: 100%; }
+.week-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; height: 100%; min-width: 0; }
 .week-bar { width: 100%; border-radius: 4px; }
+.week-bar-col .muted {
+  font-size: 9.5px;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  max-height: 32px;
+}
 
 .streak-card {
   display: flex;
