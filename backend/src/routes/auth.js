@@ -79,6 +79,15 @@ authRouter.post('/forgot-password', asyncHandler(async (req, res) => {
   res.json({ newRecoveryCode });
 }));
 
+// Lets a signed-in user get a fresh recovery code any time, without needing
+// the old one -- the session itself is the proof of identity here.
+authRouter.post('/regenerate-recovery-code', requireAuth, asyncHandler(async (req, res) => {
+  const newRecoveryCode = generateRecoveryCode();
+  const newRecoveryCodeHash = await bcrypt.hash(newRecoveryCode, 10);
+  await pool.query('UPDATE users SET recovery_code_hash = $1 WHERE id = $2', [newRecoveryCodeHash, req.userId]);
+  res.json({ newRecoveryCode });
+}));
+
 authRouter.post('/change-password', requireAuth, asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   if (!currentPassword || !newPassword) {

@@ -16,6 +16,9 @@ export default function Settings({ onLogout }) {
   const [pushError, setPushError] = useState('');
   const [pushBusy, setPushBusy] = useState(false);
   const [testMessage, setTestMessage] = useState('');
+  const [newRecoveryCode, setNewRecoveryCode] = useState('');
+  const [recoveryError, setRecoveryError] = useState('');
+  const [recoveryBusy, setRecoveryBusy] = useState(false);
   const [passkeys, setPasskeys] = useState([]);
   const [passkeyError, setPasskeyError] = useState('');
   const [passkeyBusy, setPasskeyBusy] = useState(false);
@@ -75,6 +78,19 @@ export default function Settings({ onLogout }) {
       setTestMessage('Enviada — debería llegarte en unos segundos.');
     } catch (err) {
       setPushError(err.message);
+    }
+  }
+
+  async function regenerateRecoveryCode() {
+    setRecoveryError('');
+    setRecoveryBusy(true);
+    try {
+      const { newRecoveryCode } = await api('/auth/regenerate-recovery-code', { method: 'POST' });
+      setNewRecoveryCode(newRecoveryCode);
+    } catch (err) {
+      setRecoveryError(err.message);
+    } finally {
+      setRecoveryBusy(false);
     }
   }
 
@@ -159,6 +175,28 @@ export default function Settings({ onLogout }) {
           {passwordMessage && <p className="muted">{passwordMessage}</p>}
           <button type="submit">Actualizar contraseña</button>
         </form>
+      </div>
+
+      <div className="card">
+        <h3>Código de recuperación</h3>
+        <p className="muted">
+          Es tu única forma de recuperar la cuenta si olvidas tu contraseña (no hay correo configurado). Si no guardaste el que te dimos al registrarte, genera uno nuevo aquí — el viejo queda invalidado.
+        </p>
+        {newRecoveryCode ? (
+          <div className="howto-box">
+            <p style={{ fontSize: 20, fontWeight: 800, textAlign: 'center', letterSpacing: 1, margin: '4px 0' }}>
+              {newRecoveryCode}
+            </p>
+            <p className="muted">Guárdalo ya — no se vuelve a mostrar.</p>
+          </div>
+        ) : (
+          <>
+            {recoveryError && <p className="error">{recoveryError}</p>}
+            <button className="secondary" disabled={recoveryBusy} onClick={regenerateRecoveryCode}>
+              {recoveryBusy ? 'Generando...' : 'Generar código nuevo'}
+            </button>
+          </>
+        )}
       </div>
 
       <div className="card">
