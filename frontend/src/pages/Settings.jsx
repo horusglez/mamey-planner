@@ -25,6 +25,10 @@ export default function Settings({ onLogout }) {
   const [passkeys, setPasskeys] = useState([]);
   const [passkeyError, setPasskeyError] = useState('');
   const [passkeyBusy, setPasskeyBusy] = useState(false);
+  const [newPasskeyName, setNewPasskeyName] = useState('');
+  const [addingPasskey, setAddingPasskey] = useState(false);
+  const [editingPasskeyId, setEditingPasskeyId] = useState(null);
+  const [editPasskeyName, setEditPasskeyName] = useState('');
   const [coffeeDismissed, setCoffeeDismissed] = useState(() => localStorage.getItem('mamey_coffee_dismissed') === 'true');
   const passkeySupported = isPasskeySupported();
   const pushSupported = isPushSupported();
@@ -47,8 +51,9 @@ export default function Settings({ onLogout }) {
     setPasskeyError('');
     setPasskeyBusy(true);
     try {
-      const deviceName = window.prompt(t('settings.passkeys.namePrompt'), '') || null;
-      await registerPasskey(deviceName);
+      await registerPasskey(newPasskeyName.trim() || null);
+      setNewPasskeyName('');
+      setAddingPasskey(false);
       loadPasskeys();
     } catch (err) {
       setPasskeyError(err.message);
@@ -60,6 +65,21 @@ export default function Settings({ onLogout }) {
   async function removePasskey(id) {
     await api(`/webauthn/${id}`, { method: 'DELETE' });
     loadPasskeys();
+  }
+
+  function startEditPasskeyName(pk) {
+    setEditingPasskeyId(pk.id);
+    setEditPasskeyName(pk.device_name || '');
+  }
+
+  async function savePasskeyName(id) {
+    try {
+      await api(`/webauthn/${id}`, { method: 'PATCH', body: { deviceName: editPasskeyName.trim() || null } });
+      setEditingPasskeyId(null);
+      loadPasskeys();
+    } catch (err) {
+      setPasskeyError(err.message);
+    }
   }
 
   async function togglePush() {
@@ -177,14 +197,48 @@ export default function Settings({ onLogout }) {
             <p className="muted">{t('settings.passkeys.lede')}</p>
             {passkeys.map((pk) => (
               <div key={pk.id} className="list-item">
-                <span>🔑 {pk.device_name || t('settings.passkeys.unnamed')}</span>
-                <a href="#" onClick={(e) => { e.preventDefault(); removePasskey(pk.id); }}>✕</a>
+                {editingPasskeyId === pk.id ? (
+                  <>
+                    <input
+                      style={{ margin: 0, flex: 1 }}
+                      value={editPasskeyName}
+                      onChange={(e) => setEditPasskeyName(e.target.value)}
+                      placeholder={t('settings.passkeys.namePlaceholder')}
+                      autoFocus
+                    />
+                    <a href="#" onClick={(e) => { e.preventDefault(); savePasskeyName(pk.id); }}>✓</a>
+                    <a href="#" onClick={(e) => { e.preventDefault(); setEditingPasskeyId(null); }}>✕</a>
+                  </>
+                ) : (
+                  <>
+                    <span>🔑 {pk.device_name || t('settings.passkeys.unnamed')}</span>
+                    <a href="#" onClick={(e) => { e.preventDefault(); startEditPasskeyName(pk); }}>{t('settings.passkeys.rename')}</a>
+                    <a href="#" onClick={(e) => { e.preventDefault(); removePasskey(pk.id); }}>✕</a>
+                  </>
+                )}
               </div>
             ))}
             {passkeyError && <p className="error">{passkeyError}</p>}
-            <button disabled={passkeyBusy} onClick={addPasskey}>
-              {passkeyBusy ? t('settings.passkeys.registering') : t('settings.passkeys.add')}
-            </button>
+            {addingPasskey ? (
+              <>
+                <input
+                  value={newPasskeyName}
+                  onChange={(e) => setNewPasskeyName(e.target.value)}
+                  placeholder={t('settings.passkeys.namePlaceholder')}
+                  autoFocus
+                />
+                <div className="row">
+                  <button disabled={passkeyBusy} onClick={addPasskey}>
+                    {passkeyBusy ? t('settings.passkeys.registering') : t('settings.passkeys.confirm')}
+                  </button>
+                  <button className="secondary" disabled={passkeyBusy} onClick={() => { setAddingPasskey(false); setNewPasskeyName(''); }}>
+                    {t('settings.passkeys.cancel')}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <button onClick={() => setAddingPasskey(true)}>{t('settings.passkeys.add')}</button>
+            )}
           </>
         ) : (
           <p className="muted">{t('settings.passkeys.notSupported')}</p>
