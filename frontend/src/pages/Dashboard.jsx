@@ -159,7 +159,7 @@ export default function Dashboard() {
       {!goal && (
         <div className="card">
           <p>{t('dashboard.noGoal')}</p>
-          <Link to="/goals">{t('dashboard.configureGoal')}</Link>
+          <Link to="/goals" className="btn-link">{t('dashboard.configureGoal')}</Link>
         </div>
       )}
 

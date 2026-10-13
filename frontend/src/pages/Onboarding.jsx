@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { api } from '../api/client.js';
 import { getMascotLevels } from '../lib/mascot.js';
 import { getGoalOptions } from '../lib/goalOptions.js';
+import { calorieExplainKey } from '../lib/explainGoal.js';
 import { useLang } from '../i18n/LangContext.jsx';
 
 export default function Onboarding({ onFinish }) {
@@ -25,7 +26,7 @@ export default function Onboarding({ onFinish }) {
       setSuggestion(data);
       setStep(3);
     } catch (err) {
-      setError(err.message);
+      setError(err.message === 'incomplete_profile' ? t('goals.error.incompleteProfile') : err.message);
     } finally {
       setBusy(false);
     }
@@ -122,7 +123,7 @@ export default function Onboarding({ onFinish }) {
         <div>
           <h1>{t('onboarding.suggestion.title')}</h1>
           <p className="muted">
-            {t('onboarding.suggestion.lede', { tdee: suggestion.tdee })}
+            {t(calorieExplainKey(suggestion.adjustmentPct), { tdee: suggestion.tdee, pct: Math.abs(suggestion.adjustmentPct), calories: suggestion.calories })}
           </p>
           <div className="card">
             <div className="list-item"><span>{t('onboarding.calories')}</span><strong>{suggestion.calories} kcal</strong></div>
@@ -130,7 +131,7 @@ export default function Onboarding({ onFinish }) {
             <div className="list-item"><span>{t('onboarding.carbs')}</span><strong>{suggestion.carbsG} g</strong></div>
             <div className="list-item"><span>{t('onboarding.fat')}</span><strong>{suggestion.fatG} g</strong></div>
           </div>
-          <p className="muted">{t('onboarding.suggestion.proteinNote')}</p>
+          <p className="muted">{t('goal.explain.protein', { proteinPerKg: suggestion.proteinPerKg, proteinG: suggestion.proteinG })}</p>
           {goalType !== 'maintain' && (
             <>
               <p className="muted">{t('onboarding.targetWeight.lede')}</p>

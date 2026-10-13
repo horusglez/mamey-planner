@@ -15,13 +15,14 @@ export function estimateTDEE({ sex, weightKg, heightCm, age, activityLevel }) {
   return Math.round(base * multiplier);
 }
 
+const CALORIE_ADJUSTMENT_PCT = { cut: -20, bulk: 10, recomp: -5, maintain: 0 };
+
 // Returns suggested calories + macro split given a goal type and body weight.
+// Also returns the inputs behind the math (adjustmentPct, proteinPerKg) so
+// the UI can explain *why* these numbers, not just state them.
 export function suggestGoalTargets({ tdee, goalType, weightKg }) {
-  let calories;
-  if (goalType === 'cut') calories = Math.round(tdee * 0.8);
-  else if (goalType === 'bulk') calories = Math.round(tdee * 1.1);
-  else if (goalType === 'recomp') calories = Math.round(tdee * 0.95);
-  else calories = tdee;
+  const adjustmentPct = CALORIE_ADJUSTMENT_PCT[goalType] ?? 0;
+  const calories = Math.round(tdee * (1 + adjustmentPct / 100));
 
   // Protein anchored to bodyweight (recomp/cut lean toward higher protein),
   // remaining split between carbs/fat.
@@ -32,5 +33,5 @@ export function suggestGoalTargets({ tdee, goalType, weightKg }) {
   const fatCalories = fatG * 9;
   const carbsG = Math.max(0, Math.round((calories - proteinCalories - fatCalories) / 4));
 
-  return { calories, proteinG, carbsG, fatG };
+  return { calories, proteinG, carbsG, fatG, adjustmentPct, proteinPerKg };
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Routes, Route, Navigate, NavLink, Link } from 'react-router-dom';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
@@ -10,17 +10,29 @@ import Assistant from './pages/Assistant.jsx';
 import Settings from './pages/Settings.jsx';
 import Onboarding from './pages/Onboarding.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
-import { setToken } from './api/client.js';
+import { api, setToken } from './api/client.js';
 import { useLang } from './i18n/LangContext.jsx';
 
 export default function App() {
   const [token, setTokenState] = useState(localStorage.getItem('mamey_token'));
-  const [onboarded, setOnboarded] = useState(localStorage.getItem('mamey_onboarded') === 'true');
+  // Whether onboarding is needed lives on the account (has an active goal?),
+  // never in localStorage -- that flag used to leak across accounts/devices
+  // sharing a browser, skipping onboarding (and weight logging) for brand
+  // new accounts that had never set a goal.
+  const [onboardStatus, setOnboardStatus] = useState('checking'); // 'checking' | 'needed' | 'done'
   const { t } = useLang();
+
+  useEffect(() => {
+    if (!token) return;
+    api('/goals/active')
+      .then((goal) => setOnboardStatus(goal ? 'done' : 'needed'))
+      .catch(() => setOnboardStatus('needed'));
+  }, [token]);
 
   function handleAuth(authToken) {
     setToken(authToken);
     setTokenState(authToken);
+    setOnboardStatus('checking');
   }
 
   function logout() {
@@ -29,8 +41,7 @@ export default function App() {
   }
 
   function finishOnboarding() {
-    localStorage.setItem('mamey_onboarded', 'true');
-    setOnboarded(true);
+    setOnboardStatus('done');
   }
 
   if (!token) {
@@ -50,7 +61,17 @@ export default function App() {
     );
   }
 
-  if (!onboarded) {
+  if (onboardStatus === 'checking') {
+    return (
+      <div className="app-shell">
+        <header className="hero">
+          <span className="hero-title">{t('app.title')}</span>
+        </header>
+      </div>
+    );
+  }
+
+  if (onboardStatus === 'needed') {
     return (
       <div className="app-shell">
         <header className="hero">

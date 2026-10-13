@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { getGoalOptions } from '../lib/goalOptions.js';
+import { calorieExplainKey } from '../lib/explainGoal.js';
 import { useLang } from '../i18n/LangContext.jsx';
 
 export default function Goals() {
@@ -132,16 +134,24 @@ export default function Goals() {
       {goalType && !suggestion && (
         <button disabled={busy} onClick={handleSuggest}>{busy ? t('goals.calculating') : t('goals.calculate')}</button>
       )}
-      {error && <p className="error">{error}</p>}
+      {error === 'no_weight_logged' && (
+        <div className="card">
+          <p className="error">{t('goals.error.noWeight')}</p>
+          <Link to="/metrics" className="btn-link">{t('goals.error.goToMetrics')}</Link>
+        </div>
+      )}
+      {error === 'incomplete_profile' && <p className="error">{t('goals.error.incompleteProfile')}</p>}
+      {error && error !== 'no_weight_logged' && error !== 'incomplete_profile' && <p className="error">{error}</p>}
 
       {suggestion && (
         <div className="card">
           <h3>{t('goals.yourGoalWith', { goal: selectedOption?.title.toLowerCase() })}</h3>
-          <p className="muted">{t('goals.tdeeEstimate', { tdee: suggestion.tdee })}</p>
+          <p className="muted">{t(calorieExplainKey(suggestion.adjustmentPct), { tdee: suggestion.tdee, pct: Math.abs(suggestion.adjustmentPct), calories: suggestion.calories })}</p>
           <div className="list-item"><span>{t('goals.calories')}</span><strong>{suggestion.calories} kcal</strong></div>
           <div className="list-item"><span>{t('goals.protein')}</span><strong>{suggestion.proteinG} g</strong></div>
           <div className="list-item"><span>{t('goals.carbs')}</span><strong>{suggestion.carbsG} g</strong></div>
           <div className="list-item"><span>{t('goals.fat')}</span><strong>{suggestion.fatG} g</strong></div>
+          <p className="muted" style={{ fontSize: 13 }}>{t('goal.explain.protein', { proteinPerKg: suggestion.proteinPerKg, proteinG: suggestion.proteinG })}</p>
           {goalType !== 'maintain' && (
             <>
               <p className="muted" style={{ marginTop: 10 }}>{t('goals.targetWeightOptional')}</p>

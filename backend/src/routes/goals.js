@@ -21,14 +21,14 @@ goalsRouter.post('/suggest', asyncHandler(async (req, res) => {
   const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [req.userId]);
   const user = userResult.rows[0];
   if (!user.height_cm || !user.birth_date || !user.sex) {
-    return res.status(400).json({ error: 'complete profile (sex, birth_date, height_cm) first' });
+    return res.status(400).json({ error: 'incomplete_profile' });
   }
   const metricResult = await pool.query(
     'SELECT weight_kg FROM body_metrics WHERE user_id = $1 AND weight_kg IS NOT NULL ORDER BY recorded_at DESC LIMIT 1',
     [req.userId]
   );
   const weightKg = metricResult.rows[0]?.weight_kg;
-  if (!weightKg) return res.status(400).json({ error: 'log a weight entry first' });
+  if (!weightKg) return res.status(400).json({ error: 'no_weight_logged' });
 
   const age = Math.floor((Date.now() - new Date(user.birth_date).getTime()) / (365.25 * 24 * 3600 * 1000));
   const tdee = estimateTDEE({ sex: user.sex, weightKg, heightCm: user.height_cm, age, activityLevel: user.activity_level });
