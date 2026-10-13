@@ -1,87 +1,94 @@
 # 🥭 Mamey Planner
 
-Una app de nutrición y recomposición corporal **gratuita, sin anuncios y sin límites artificiales** — pensada para que cualquier persona, sin importar su presupuesto, pueda tener mejores hábitos alimenticios y avanzar hacia su objetivo físico.
+*[Leer en español](README.es.md)*
 
-**Código abierto.** Página de presentación: https://mameyplanner.hjmg.mx
+A **free, ad-free, no-artificial-limits** nutrition and body recomposition app — built so anyone, regardless of budget, can build better eating habits and work toward their physical goal.
 
-## ¿Por qué "Mamey"?
+**Open source.** Live site: https://mameyplanner.hjmg.mx
 
-En México, al mamey (o zapote) le decimos coloquialmente así también a alguien musculoso, fuerte y "todo grandote" — "está bien mamey" es una forma común de describir a alguien mamado. De ahí el nombre: una app que te ayuda a construir ese físico, con una mascota que literalmente "crece" contigo según tu constancia.
+## Why "Mamey"?
 
-## Misión
+In Mexico, "mamey" (the fruit, also called zapote) is also slang for someone muscular, strong, built — "está bien mamey" is a common, affectionate way to describe someone jacked. Hence the name: an app that helps you build that physique, with a mascot that literally "grows" with you as you stay consistent.
 
-Ayudar a las personas a construir mejores hábitos alimenticios y alcanzar su recomposición corporal u objetivos físicos, eliminando las barreras de costo, complejidad y publicidad que imponen las apps de nutrición comerciales.
+## Mission
 
-## Visión
+Help people build better eating habits and reach their body recomposition or physical goals, removing the cost, complexity and advertising barriers that commercial nutrition apps impose.
 
-Ser la alternativa gratuita y de código abierto más completa frente a apps como Foodvisor, Cal AI o MyFitnessPal — disponible para cualquier dispositivo, con una base de datos nutricional abierta y verificada, y sin que el usuario tenga que pagar ni ver un solo anuncio para acceder a funciones completas.
+## Vision
 
-## Objetivo
+Be the most complete free, open-source alternative to apps like Foodvisor, Cal AI or MyFitnessPal — available on any device, backed by an open and verified nutrition database, with no payment or ads required to access full functionality.
 
-- **Corto plazo:** v1 estable como web app, funcional en cualquier navegador/dispositivo.
-- **Mediano plazo:** liberar el proyecto como **código abierto** una vez esté estable, para que cualquiera pueda usarlo, auditarlo o mejorarlo.
-- **Largo plazo:** apps nativas (iOS/Android) con integración a HealthKit/Health Connect.
+## Objective
 
-## Filosofía
+- **Short term:** stable v1 as a web app, usable on any browser/device.
+- **Medium term:** keep growing as an **open-source** project so anyone can use, audit or improve it. *(Already done — see below.)*
+- **Long term:** native apps (iOS/Android) with HealthKit/Health Connect integration.
 
-- **Gratis es gratis.** Sin "3 escaneos al día y luego paga". Todo lo que la app ofrece, lo ofrece completo.
-- **Sin anuncios**, nunca.
-- **Datos abiertos y verificados** — base de datos nutricional de Open Food Facts/USDA, no crowdsourced sin control.
-- **Privacidad primero** — si usas IA para fotos, tú traes tu propia API key (BYOK); tus datos nunca pasan por un proveedor que no elegiste tú mismo.
-- **Multiplataforma real** — web ahora, nativo después, sin dejar a nadie fuera por el sistema operativo que use.
+## Philosophy
 
-## Funcionalidades
+- **Free means free.** No "3 scans a day, then pay." Everything the app offers, it offers in full.
+- **No ads**, ever.
+- **Open, verified data** — Open Food Facts/USDA nutrition database, not uncontrolled crowdsourcing.
+- **Privacy first** — if you use AI for photos, you bring your own API key (BYOK); your data never passes through a provider you didn't choose yourself.
+- **Real cross-platform** — web now, native later, nobody left out based on what OS they use.
 
-- Registro de comidas por **búsqueda**, **voz**, **código de barras**, **foto con IA** (proveedor a tu elección) o **importación de receta por URL**.
-- Alimentos personalizados cuando no se encuentra algo en la base de datos.
-- Cálculo automático de calorías y macros según tu objetivo (bajar grasa, ganar músculo, recomposición, mantener) usando TDEE real (Mifflin-St Jeor).
-- Seguimiento de peso, % de grasa y cintura, con gráfica de progreso.
-- Rachas de hábito (streaks) para reforzar la constancia.
-- Dashboard con navegación por día (no solo "hoy").
-- Micronutrientes (fibra, azúcar, sodio, vitaminas, minerales) cuando la fuente de datos los reporta.
-- Recuperación de cuenta sin depender de un servidor de correo (código de recuperación de un solo uso).
-- Exportación completa de tus propios datos en cualquier momento.
-- Onboarding guiado paso a paso para quien no sabe nada de nutrición ni de tecnología.
-- **Asistente de IA**: genera un plan de comidas completo según tu meta, y un chat de nutrición que conoce tu objetivo y lo que llevas comido hoy (usa tu propia API key).
-- Notificaciones push con hora aleatoria (estilo Duolingo) si no has registrado nada en el día.
-- Instalable como app (PWA) en cualquier dispositivo.
+## Features
 
-## Estado del proyecto
+- Log food by **search**, **voice**, **barcode**, **AI photo** (your choice of provider) or **recipe URL import**.
+- Custom foods when something isn't in the database.
+- Automatic calorie/macro targets based on your goal (cut, bulk, recomposition, maintain) using real TDEE (Mifflin-St Jeor).
+- Weight, body fat % and waist tracking, with a progress chart.
+- Habit streaks to reinforce consistency.
+- Dashboard with day-by-day navigation (not just "today").
+- Micronutrients (fiber, sugar, sodium, vitamins, minerals) when the data source reports them.
+- Account recovery without relying on an email server (one-time recovery code).
+- Full export of your own data, any time.
+- Step-by-step guided onboarding for people who know nothing about nutrition or tech.
+- **AI assistant**: generates a full meal plan based on your goal, and a nutrition chat that knows your goal and what you've eaten today (uses your own API key).
+- Push reminders at a random time of day (Duolingo-style) if you haven't logged anything yet.
+- Installable as an app (PWA) on any device.
 
-🚧 **En desarrollo activo**, pero ya de código abierto. Corre como app web (Docker). Aún no tiene build de producción optimizado ni pruebas automatizadas — ver Roadmap.
+## Project status
 
-## Seguridad
+🚧 **Actively developed**, but already open source. Runs as a web app (Docker). No optimized production build or automated tests yet — see Roadmap.
 
-`docker-compose.yml` trae secretos de **desarrollo** (JWT, cifrado de API keys, llaves VAPID de push) ya generados para que el proyecto corra out-of-the-box en local. **Si vas a desplegar esto en un servidor real o expuesto a internet, regenera los tres antes:** `JWT_SECRET`, `AI_KEY_ENCRYPTION_SECRET` y el par `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY` (este último con `npx web-push generate-vapid-keys`).
+## Security
 
-## Cómo correrlo localmente
+`docker-compose.yml` + `backend/.env.example` show which secrets the backend needs (`JWT_SECRET`, `AI_KEY_ENCRYPTION_SECRET`, and a `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY` pair for push notifications). Copy `backend/.env.example` to `backend/.env` and fill in your own values — **never commit `.env`**. Generate secrets with `openssl rand -hex 32`, and the VAPID pair with `npx web-push generate-vapid-keys`.
 
-Requiere Docker.
+## Running it locally
+
+Requires Docker.
 
 ```bash
-git clone <este-repo>
+git clone https://github.com/horusglez/mamey-planner.git
 cd mamey-planner
+cp backend/.env.example backend/.env   # then fill in the values, see Security above
 docker-compose up -d --build
 ```
 
 - Web: http://localhost:3100
 - API: http://localhost:4100/api
 
-## Stack técnico
+## Tech stack
 
 - **Frontend:** React + Vite
 - **Backend:** Node.js + Express
-- **Base de datos:** PostgreSQL
-- **Datos nutricionales:** Open Food Facts (API abierta y gratuita)
-- **IA de fotos (opcional):** Anthropic Claude / OpenAI / Google Gemini — a elección del usuario, con su propia API key
-- **Infraestructura:** Docker Compose
+- **Database:** PostgreSQL
+- **Nutrition data:** Open Food Facts (free, open API)
+- **Photo AI (optional):** Anthropic Claude / OpenAI / Google Gemini — user's choice, with their own API key
+- **Infrastructure:** Docker Compose
 
-## Roadmap pendiente
+## Roadmap
 
-- [ ] Build de producción (actualmente corre en modo desarrollo)
-- [ ] Apps nativas (iOS/Android) con HealthKit / Health Connect
-- [ ] Pruebas automatizadas
+- [ ] Production build (currently runs in dev mode)
+- [ ] Native apps (iOS/Android) with HealthKit / Health Connect
+- [ ] Automated tests
 
-## Licencia
+## License
 
-MIT — ver [LICENSE](LICENSE). Úsala, modifícala, lo que quieras.
+MIT — see [LICENSE](LICENSE). Use it, modify it, whatever you want.
+
+## Contributing
+
+Issues and pull requests are welcome at [github.com/horusglez/mamey-planner](https://github.com/horusglez/mamey-planner).
