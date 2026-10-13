@@ -38,9 +38,11 @@ export const translations = {
     'register.activityActive': 'Activo',
     'register.activityVeryActive': 'Muy activo',
     'register.submit': 'Crear cuenta',
-    'register.passkeySubmit': 'Crear cuenta con passkey (sin contraseña)',
+    'register.mode.password': 'Con contraseña',
+    'register.mode.passkey': 'Con passkey',
+    'register.mode.passkeyHint': 'Sin contraseña — crearás tu cuenta con Face ID, huella o Windows Hello.',
+    'register.passkeySubmit': 'Crear cuenta con passkey',
     'register.passkeyBusy': 'Creando cuenta…',
-    'register.error.completeProfile': 'Completa nombre, usuario, fecha de nacimiento y altura antes de usar passkey.',
     'register.haveAccount': 'Ya tengo cuenta',
 
     // --- Forgot password ---
@@ -288,6 +290,7 @@ export const translations = {
     'settings.password.current': 'contraseña actual',
     'settings.password.new': 'nueva contraseña',
     'settings.password.updated': 'Contraseña actualizada.',
+    'settings.password.noPassword': 'Tu cuenta no tiene contraseña — inicias sesión con tu passkey. Si pierdes tu passkey, usa tu código de recuperación para recuperar el acceso.',
     'settings.password.submit': 'Actualizar contraseña',
     'settings.recovery.title': 'Código de recuperación',
     'settings.recovery.lede': 'Es tu única forma de recuperar la cuenta si olvidas tu contraseña (no hay correo configurado). Si no guardaste el que te dimos al registrarte, genera uno nuevo aquí — el viejo queda invalidado.',
@@ -419,9 +422,11 @@ export const translations = {
     'register.activityActive': 'Active',
     'register.activityVeryActive': 'Very active',
     'register.submit': 'Create account',
-    'register.passkeySubmit': 'Create account with passkey (no password)',
+    'register.mode.password': 'With password',
+    'register.mode.passkey': 'With passkey',
+    'register.mode.passkeyHint': "No password — you'll create your account with Face ID, fingerprint or Windows Hello.",
+    'register.passkeySubmit': 'Create account with passkey',
     'register.passkeyBusy': 'Creating account…',
-    'register.error.completeProfile': 'Fill in name, username, birth date and height before using a passkey.',
     'register.haveAccount': 'I already have an account',
 
     // --- Forgot password ---
@@ -669,6 +674,7 @@ export const translations = {
     'settings.password.current': 'current password',
     'settings.password.new': 'new password',
     'settings.password.updated': 'Password updated.',
+    'settings.password.noPassword': "Your account has no password — you sign in with your passkey. If you lose it, use your recovery code to get back in.",
     'settings.password.submit': 'Update password',
     'settings.recovery.title': 'Recovery code',
     'settings.recovery.lede': "It's the only way to recover your account if you forget your password (no email is configured). If you didn't save the one we gave you at signup, generate a new one here — the old one gets invalidated.",

@@ -30,8 +30,9 @@ authRouter.post('/register', asyncHandler(async (req, res) => {
 }));
 
 authRouter.get('/me', requireAuth, asyncHandler(async (req, res) => {
-  const result = await pool.query('SELECT id, email, name, created_at FROM users WHERE id = $1', [req.userId]);
-  res.json(result.rows[0]);
+  const result = await pool.query('SELECT id, email, name, password_hash, created_at FROM users WHERE id = $1', [req.userId]);
+  const { password_hash, ...user } = result.rows[0];
+  res.json({ ...user, hasPassword: !!password_hash });
 }));
 
 authRouter.post('/login', asyncHandler(async (req, res) => {

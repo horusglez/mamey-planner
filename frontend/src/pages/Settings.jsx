@@ -193,13 +193,17 @@ export default function Settings({ onLogout }) {
 
       <div className="card">
         <h3>{t('settings.password.title')}</h3>
-        <form onSubmit={changePassword}>
-          <input type="password" placeholder={t('settings.password.current')} value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
-          <input type="password" placeholder={t('settings.password.new')} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
-          {passwordError && <p className="error">{passwordError}</p>}
-          {passwordMessage && <p className="muted">{passwordMessage}</p>}
-          <button type="submit">{t('settings.password.submit')}</button>
-        </form>
+        {profile && !profile.hasPassword ? (
+          <p className="muted">{t('settings.password.noPassword')}</p>
+        ) : (
+          <form onSubmit={changePassword}>
+            <input type="password" placeholder={t('settings.password.current')} value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
+            <input type="password" placeholder={t('settings.password.new')} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+            {passwordError && <p className="error">{passwordError}</p>}
+            {passwordMessage && <p className="muted">{passwordMessage}</p>}
+            <button type="submit">{t('settings.password.submit')}</button>
+          </form>
+        )}
       </div>
 
       <div className="card">
