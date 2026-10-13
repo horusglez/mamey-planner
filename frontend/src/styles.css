@@ -79,7 +79,7 @@ h1 {
 
 h3 { margin: 0 0 8px; }
 
-input, select, button, .icon-btn {
+input, select, button, .icon-btn, .btn-link {
   font-size: 15px;
   padding: 12px 14px;
   border-radius: 12px;
@@ -92,7 +92,7 @@ input, select, button, .icon-btn {
 
 input:focus, select:focus { outline: 2px solid var(--mamey); border-color: var(--mamey); }
 
-button {
+button, .btn-link {
   background: linear-gradient(135deg, var(--mamey), var(--mamey-dark));
   color: #fff;
   border: none;
@@ -100,10 +100,14 @@ button {
   font-weight: 700;
   box-shadow: 0 4px 10px rgba(232, 80, 47, 0.25);
   transition: transform 0.05s ease;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
 }
-button:active { transform: scale(0.98); }
+button:active, .btn-link:active { transform: scale(0.98); }
 button:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
-button.secondary {
+button.secondary, .btn-link.secondary {
   background: #fff;
   color: var(--ink);
   border: 1px solid #e3d4c8;

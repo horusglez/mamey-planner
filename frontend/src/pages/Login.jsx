@@ -54,8 +54,9 @@ export default function Login({ onAuth }) {
           {passkeyBusy ? t('login.passkeyBusy') : t('login.passkey')}
         </button>
       )}
-      <p className="muted">{t('login.noAccount')} <Link to="/register">{t('login.register')}</Link></p>
-      <p className="muted"><Link to="/forgot-password">{t('login.forgot')}</Link></p>
+      <p className="muted" style={{ marginBottom: 6 }}>{t('login.noAccount')}</p>
+      <Link to="/register" className="btn-link secondary">{t('login.register')}</Link>
+      <Link to="/forgot-password" className="btn-link secondary">{t('login.forgot')}</Link>
     </div>
   );
 }

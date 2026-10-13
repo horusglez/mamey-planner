@@ -35,7 +35,7 @@ export default function ForgotPassword() {
             {result.newRecoveryCode}
           </p>
         </div>
-        <Link to="/"><button>{t('forgot.goLogin')}</button></Link>
+        <Link to="/" className="btn-link">{t('forgot.goLogin')}</Link>
       </div>
     );
   }
@@ -51,9 +51,8 @@ export default function ForgotPassword() {
         {error && <p className="error">{error}</p>}
         <button type="submit">{t('forgot.submit')}</button>
       </form>
-      <p className="muted">
-        {t('forgot.noCode')} <Link to="/">{t('forgot.back')}</Link>
-      </p>
+      <p className="muted" style={{ marginBottom: 6 }}>{t('forgot.noCode')}</p>
+      <Link to="/" className="btn-link secondary">{t('forgot.back')}</Link>
     </div>
   );
 }

@@ -108,7 +108,7 @@ export default function Register({ onAuth }) {
           </button>
         )}
       </form>
-      <p className="muted"><Link to="/">{t('register.haveAccount')}</Link></p>
+      <Link to="/" className="btn-link secondary">{t('register.haveAccount')}</Link>
     </div>
   );
 }
