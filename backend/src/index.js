@@ -12,6 +12,7 @@ import { photosRouter } from './routes/photos.js';
 import { exportRouter } from './routes/export.js';
 import { pushRouter } from './routes/push.js';
 import { aiRouter } from './routes/ai.js';
+import { webauthnRouter } from './routes/webauthn.js';
 import { startReminderScheduler } from './lib/reminderScheduler.js';
 
 const app = express();
@@ -31,6 +32,7 @@ app.use('/api/photos', photosRouter);
 app.use('/api/export', exportRouter);
 app.use('/api/push', pushRouter);
 app.use('/api/ai', aiRouter);
+app.use('/api/webauthn', webauthnRouter);
 
 app.use((err, _req, res, _next) => {
   console.error(err);

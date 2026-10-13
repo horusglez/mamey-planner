@@ -31,6 +31,8 @@ services:
       VAPID_SUBJECT: mailto:admin@mamey-planner.local
       REMINDER_WINDOW_START: "9"
       REMINDER_WINDOW_END: "21"
+      WEBAUTHN_RP_ID: localhost
+      WEBAUTHN_ORIGIN: http://localhost:3100
       PORT: 4000
     depends_on:
       db:

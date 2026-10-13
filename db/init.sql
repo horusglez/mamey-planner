@@ -14,6 +14,7 @@ CREATE TABLE users (
   ai_provider TEXT CHECK (ai_provider IN ('anthropic','openai','gemini')),
   ai_api_key_encrypted TEXT,
   recovery_code_hash TEXT,
+  webauthn_challenge TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -94,4 +95,15 @@ CREATE TABLE reminder_schedule (
   minute INT NOT NULL,
   sent BOOLEAN NOT NULL DEFAULT false,
   PRIMARY KEY (user_id, date)
+);
+
+CREATE TABLE webauthn_credentials (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  credential_id TEXT NOT NULL UNIQUE,
+  public_key TEXT NOT NULL,
+  counter BIGINT NOT NULL DEFAULT 0,
+  device_name TEXT,
+  transports TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

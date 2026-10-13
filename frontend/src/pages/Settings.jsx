@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, downloadFile } from '../api/client.js';
 import AiProviderSettings from '../components/AiProviderSettings.jsx';
 import { isPushSupported, enablePush, disablePush } from '../lib/push.js';
+import { isPasskeySupported, registerPasskey } from '../lib/passkey.js';
 
 export default function Settings({ onLogout }) {
   const [aiConfig, setAiConfig] = useState(null);
@@ -15,10 +16,38 @@ export default function Settings({ onLogout }) {
   const [pushError, setPushError] = useState('');
   const [pushBusy, setPushBusy] = useState(false);
   const [testMessage, setTestMessage] = useState('');
+  const [passkeys, setPasskeys] = useState([]);
+  const [passkeyError, setPasskeyError] = useState('');
+  const [passkeyBusy, setPasskeyBusy] = useState(false);
+  const passkeySupported = isPasskeySupported();
   const pushSupported = isPushSupported();
 
   useEffect(() => { api('/settings/ai').then(setAiConfig).catch(() => {}); }, []);
   useEffect(() => { if (pushSupported) api('/push/status').then(setPushStatus).catch(() => {}); }, []);
+  useEffect(() => { if (passkeySupported) loadPasskeys(); }, []);
+
+  function loadPasskeys() {
+    api('/webauthn/list').then(setPasskeys).catch(() => {});
+  }
+
+  async function addPasskey() {
+    setPasskeyError('');
+    setPasskeyBusy(true);
+    try {
+      const deviceName = window.prompt('¿Cómo le llamamos a este dispositivo? (ej. "mi iPhone", "laptop trabajo")', '') || null;
+      await registerPasskey(deviceName);
+      loadPasskeys();
+    } catch (err) {
+      setPasskeyError(err.message);
+    } finally {
+      setPasskeyBusy(false);
+    }
+  }
+
+  async function removePasskey(id) {
+    await api(`/webauthn/${id}`, { method: 'DELETE' });
+    loadPasskeys();
+  }
 
   async function togglePush() {
     setPushError('');
@@ -97,6 +126,29 @@ export default function Settings({ onLogout }) {
       </div>
 
       {!aiConfig?.configured && <AiProviderSettings current={aiConfig} onSaved={setAiConfig} />}
+
+      <div className="card">
+        <h3>Passkeys</h3>
+        {passkeySupported ? (
+          <>
+            <p className="muted">
+              Inicia sesión con Face ID, Touch ID, Windows Hello o una llave de seguridad — sin escribir contraseña. Puedes registrar uno por cada dispositivo que uses.
+            </p>
+            {passkeys.map((pk) => (
+              <div key={pk.id} className="list-item">
+                <span>🔑 {pk.device_name || 'Passkey sin nombre'}</span>
+                <a href="#" onClick={(e) => { e.preventDefault(); removePasskey(pk.id); }}>✕</a>
+              </div>
+            ))}
+            {passkeyError && <p className="error">{passkeyError}</p>}
+            <button disabled={passkeyBusy} onClick={addPasskey}>
+              {passkeyBusy ? 'Registrando...' : '+ Agregar passkey de este dispositivo'}
+            </button>
+          </>
+        ) : (
+          <p className="muted">Tu navegador no soporta passkeys.</p>
+        )}
+      </div>
 
       <div className="card">
         <h3>Cambiar contraseña</h3>
