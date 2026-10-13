@@ -159,12 +159,13 @@ nav.tabbar {
 nav.tabbar a {
   flex: 1;
   text-align: center;
-  padding: 10px 0;
+  padding: 10px 2px;
   text-decoration: none;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 10.5px;
   font-weight: 600;
   border-radius: 14px;
+  white-space: nowrap;
 }
 nav.tabbar a.active { color: #fff; background: linear-gradient(135deg, var(--leaf), var(--leaf-dark)); }
 
@@ -289,3 +290,35 @@ nav.tabbar a.active { color: #fff; background: linear-gradient(135deg, var(--lea
 .howto-box ol { margin: 8px 0; padding-left: 20px; }
 .howto-box li { margin-bottom: 6px; font-size: 14px; color: var(--ink); }
 .howto-box a { text-decoration: none; display: block; }
+
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 200px;
+  max-height: 50vh;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding: 4px 2px;
+}
+.chat-bubble {
+  max-width: 85%;
+  padding: 10px 13px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+.chat-bubble.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, var(--mamey), var(--mamey-dark));
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.chat-bubble.assistant {
+  align-self: flex-start;
+  background: #fff;
+  border: 1px solid #f2e4d8;
+  color: var(--ink);
+  border-bottom-left-radius: 4px;
+}

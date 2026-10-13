@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import LogFood from './pages/LogFood.jsx';
 import Metrics from './pages/Metrics.jsx';
 import Goals from './pages/Goals.jsx';
+import Assistant from './pages/Assistant.jsx';
 import Settings from './pages/Settings.jsx';
 import Onboarding from './pages/Onboarding.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
@@ -75,6 +76,7 @@ export default function App() {
           <Route path="/log" element={<LogFood />} />
           <Route path="/metrics" element={<Metrics />} />
           <Route path="/goals" element={<Goals />} />
+          <Route path="/ai" element={<Assistant />} />
           <Route path="/settings" element={<Settings onLogout={logout} />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
@@ -84,6 +86,7 @@ export default function App() {
         <NavLink to="/log" className={({ isActive }) => (isActive ? 'active' : '')}>Registrar</NavLink>
         <NavLink to="/metrics" className={({ isActive }) => (isActive ? 'active' : '')}>Medidas</NavLink>
         <NavLink to="/goals" className={({ isActive }) => (isActive ? 'active' : '')}>Meta</NavLink>
+        <NavLink to="/ai" className={({ isActive }) => (isActive ? 'active' : '')}>IA</NavLink>
       </nav>
     </div>
   );
