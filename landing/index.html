@@ -110,6 +110,14 @@
 
   figure.hero-art { margin: 0; border-radius: 20px; overflow: hidden; box-shadow: 0 18px 40px -16px rgba(0,0,0,0.35); min-width: 0; }
   figure.hero-art svg { width: 100%; height: auto; display: block; }
+  .mock-ui .mock-card { fill: var(--card-bg); stroke: var(--line); }
+  .mock-ui .mock-pill { fill: var(--pill-bg); stroke: var(--pill-border); }
+  .mock-ui .mock-bar { fill: var(--line); }
+  .mock-ui .mock-bar-light { opacity: 0.6; }
+  .mock-ui .mock-accent-fill { fill: var(--mamey); }
+  .mock-ui .mock-accent-fill-dark { fill: var(--mamey-dark); }
+  .mock-ui .mock-accent-stroke { stroke: var(--mamey); }
+  .mock-ui .mock-leaf-stroke { stroke: var(--leaf); }
 
   section { padding: 72px 0; border-bottom: 1px solid var(--line); }
   .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mamey-dark); }
@@ -215,23 +223,23 @@
       </div>
     </div>
     <figure class="hero-art">
-      <svg viewBox="0 0 360 300" fill="none">
-        <rect x="0" y="0" width="360" height="300" rx="20" fill="#fff" stroke="#e9ddd2"/>
-        <rect x="24" y="28" width="312" height="52" rx="10" fill="#fff8f0" stroke="#f1e4d6"/>
-        <circle cx="48" cy="54" r="9" fill="#ff6b4a"/>
-        <rect x="68" y="46" width="140" height="8" rx="4" fill="#e9ddd2"/>
-        <rect x="68" y="60" width="90" height="6" rx="3" fill="#f1e4d6"/>
-        <rect x="24" y="92" width="150" height="90" rx="10" fill="#fff" stroke="#e9ddd2"/>
-        <circle cx="99" cy="128" r="26" fill="none" stroke="#2f7d44" stroke-width="7" stroke-dasharray="110" stroke-dashoffset="35" stroke-linecap="round" transform="rotate(-90 99 128)"/>
-        <rect x="186" y="92" width="150" height="90" rx="10" fill="#fff" stroke="#e9ddd2"/>
-        <polyline points="200,160 220,140 238,150 258,118 278,128 300,104" fill="none" stroke="#ff6b4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="300" cy="104" r="4" fill="#e8502f"/>
-        <rect x="24" y="196" width="312" height="80" rx="10" fill="#fff" stroke="#e9ddd2"/>
-        <rect x="40" y="212" width="80" height="48" rx="8" fill="#fef3ec" stroke="#f6d8c7"/>
-        <path d="M60 236l8 8 16-18" stroke="#2f7d44" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        <rect x="134" y="216" width="160" height="7" rx="3.5" fill="#e9ddd2"/>
-        <rect x="134" y="232" width="110" height="7" rx="3.5" fill="#f1e4d6"/>
-        <rect x="134" y="248" width="130" height="7" rx="3.5" fill="#f1e4d6"/>
+      <svg viewBox="0 0 360 300" fill="none" class="mock-ui">
+        <rect x="0" y="0" width="360" height="300" rx="20" class="mock-card"/>
+        <rect x="24" y="28" width="312" height="52" rx="10" class="mock-pill"/>
+        <circle cx="48" cy="54" r="9" class="mock-accent-fill"/>
+        <rect x="68" y="46" width="140" height="8" rx="4" class="mock-bar"/>
+        <rect x="68" y="60" width="90" height="6" rx="3" class="mock-bar mock-bar-light"/>
+        <rect x="24" y="92" width="150" height="90" rx="10" class="mock-card"/>
+        <circle cx="99" cy="128" r="26" fill="none" class="mock-leaf-stroke" stroke-width="7" stroke-dasharray="110" stroke-dashoffset="35" stroke-linecap="round" transform="rotate(-90 99 128)"/>
+        <rect x="186" y="92" width="150" height="90" rx="10" class="mock-card"/>
+        <polyline points="200,160 220,140 238,150 258,118 278,128 300,104" fill="none" class="mock-accent-stroke" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="300" cy="104" r="4" class="mock-accent-fill-dark"/>
+        <rect x="24" y="196" width="312" height="80" rx="10" class="mock-card"/>
+        <rect x="40" y="212" width="80" height="48" rx="8" class="mock-pill"/>
+        <path d="M60 236l8 8 16-18" class="mock-leaf-stroke" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="134" y="216" width="160" height="7" rx="3.5" class="mock-bar"/>
+        <rect x="134" y="232" width="110" height="7" rx="3.5" class="mock-bar mock-bar-light"/>
+        <rect x="134" y="248" width="130" height="7" rx="3.5" class="mock-bar mock-bar-light"/>
       </svg>
     </figure>
   </div>
