@@ -43,7 +43,7 @@ export default function ForgotPassword() {
       <h1>Recuperar contraseña</h1>
       <p className="muted">Usa el código de recuperación que guardaste cuando creaste tu cuenta.</p>
       <form onSubmit={handleSubmit}>
-        <input type="email" placeholder="correo" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input type="text" placeholder="usuario" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input placeholder="código de recuperación (XXXX-XXXX-XXXX)" value={recoveryCode} onChange={(e) => setRecoveryCode(e.target.value)} required />
         <input type="password" placeholder="nueva contraseña" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
         {error && <p className="error">{error}</p>}

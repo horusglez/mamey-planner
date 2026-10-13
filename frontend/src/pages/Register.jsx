@@ -50,7 +50,7 @@ export default function Register({ onAuth }) {
       <h1>Crear cuenta</h1>
       <form onSubmit={handleSubmit}>
         <input placeholder="nombre" value={form.name} onChange={(e) => update('name', e.target.value)} required />
-        <input type="email" placeholder="correo" value={form.email} onChange={(e) => update('email', e.target.value)} required />
+        <input type="text" placeholder="usuario" value={form.email} onChange={(e) => update('email', e.target.value)} required />
         <input type="password" placeholder="contraseña" value={form.password} onChange={(e) => update('password', e.target.value)} required />
         <div className="row">
           <select value={form.sex} onChange={(e) => update('sex', e.target.value)}>

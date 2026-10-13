@@ -24,7 +24,7 @@ export default function Login({ onAuth }) {
   async function handlePasskeyLogin() {
     setError('');
     if (!email) {
-      setError('Escribe tu correo arriba primero.');
+      setError('Escribe tu usuario arriba primero.');
       return;
     }
     setPasskeyBusy(true);
@@ -42,7 +42,7 @@ export default function Login({ onAuth }) {
     <div>
       <h1>🥭 Mamey Planner</h1>
       <form onSubmit={handleSubmit}>
-        <input type="email" placeholder="correo" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input type="text" placeholder="usuario" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input type="password" placeholder="contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required />
         {error && <p className="error">{error}</p>}
         <button type="submit">Entrar</button>
