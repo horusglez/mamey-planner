@@ -48,11 +48,13 @@ Be the most complete free, open-source alternative to apps like Foodvisor, Cal A
 - Step-by-step guided onboarding for people who know nothing about nutrition or tech.
 - **AI assistant**: generates a full meal plan based on your goal, and a nutrition chat that knows your goal and what you've eaten today (uses your own API key).
 - Push reminders at a random time of day (Duolingo-style) if you haven't logged anything yet.
+- **Passkey login** — sign in, or create your account from scratch, with no password at all.
+- **Spanish and English**, switchable any time (Spanish by default).
 - Installable as an app (PWA) on any device.
 
 ## Project status
 
-🚧 **Actively developed**, but already open source. Runs as a web app (Docker). No optimized production build or automated tests yet — see Roadmap.
+**v1.0.0** — first stable release. Runs as a web app (Docker). No optimized production build or automated tests yet — see Roadmap.
 
 ## Security
 

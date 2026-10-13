@@ -48,11 +48,13 @@ Ser la alternativa gratuita y de código abierto más completa frente a apps com
 - Onboarding guiado paso a paso para quien no sabe nada de nutrición ni de tecnología.
 - **Asistente de IA**: genera un plan de comidas completo según tu meta, y un chat de nutrición que conoce tu objetivo y lo que llevas comido hoy (usa tu propia API key).
 - Notificaciones push con hora aleatoria (estilo Duolingo) si no has registrado nada en el día.
+- **Inicio de sesión con passkey** — entra, o crea tu cuenta desde cero, sin usar contraseña.
+- **Español e inglés**, cambiable en cualquier momento (español por defecto).
 - Instalable como app (PWA) en cualquier dispositivo.
 
 ## Estado del proyecto
 
-🚧 **En desarrollo activo**, pero ya de código abierto. Corre como app web (Docker). Aún no tiene build de producción optimizado ni pruebas automatizadas — ver Roadmap.
+**v1.0.0** — primera versión estable. Corre como app web (Docker). Aún no tiene build de producción optimizado ni pruebas automatizadas — ver Roadmap.
 
 ## Seguridad
 
